@@ -13,7 +13,7 @@ class SendDialog(QDialog):
         self.amount.setAlignment(Qt.AlignRight|Qt.AlignVCenter)
         amount_max_width = self.fontMetrics().averageCharWidth() * 10
         self.amount.setMaximumWidth(amount_max_width)
-        dv = QDoubleValidator()
+        dv = QDoubleValidator(self.amount)
         dv.setDecimals(2)
         dv.setNotation(QDoubleValidator.StandardNotation)
         self.amount.setValidator(dv)
