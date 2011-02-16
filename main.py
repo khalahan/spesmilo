@@ -4,6 +4,7 @@ from PySide.QtWebKit import *
 import core_interface
 import cashier
 import send
+from settings import SpesmiloSettings, SettingsDialog
 
 class ConnectingDialog(QDialog):
     def __init__(self, parent):
@@ -103,7 +104,8 @@ class RootWindow(QMainWindow):
 
     def __init__(self):
         super(RootWindow, self).__init__()
-        self.core = core_interface.CoreInterface()
+        self.uri = SpesmiloSettings.getEffectiveURI()
+        self.core = core_interface.CoreInterface(self.uri)
         icon = lambda s: QIcon('./icons/' + s)
         self.bitcoin_icon = icon('bitcoin32.xpm')
         self.tray = TrayIcon(self.core, self)

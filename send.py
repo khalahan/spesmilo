@@ -77,10 +77,12 @@ if __name__ == '__main__':
     import os
     import sys
     import core_interface
+    from settings import SpesmiloSettings
     os.system('bitcoind')
     translator = QTranslator()
     #translator.load('data/translations/eo_EO')
     app = QApplication(sys.argv)
-    core = core_interface.CoreInterface()
+    uri = SpesmiloSettings.getEffectiveURI()
+    core = core_interface.CoreInterface(uri)
     send = SendDialog(core, None)
     sys.exit(app.exec_())

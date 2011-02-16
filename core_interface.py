@@ -2,8 +2,8 @@ import jsonrpc
 from jsonrpc.proxy import JSONRPCException
 
 class CoreInterface:
-    def __init__(self):
-        self.access = jsonrpc.ServiceProxy('http://user:pass@127.0.0.1:8332')
+    def __init__(self, uri):
+        self.access = jsonrpc.ServiceProxy(uri)
 
     def transactions(self):
         return self.access.listtransactions()

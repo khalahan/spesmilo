@@ -250,11 +250,13 @@ if __name__ == '__main__':
     import os
     import sys
     import core_interface
+    from settings import SpesmiloSettings
     os.system('/home/genjix/src/bitcoin/bitcoind')
     translator = QTranslator()
     #translator.load('data/translations/eo_EO')
     app = QApplication(sys.argv)
-    core = core_interface.CoreInterface()
+    uri = SpesmiloSettings.getEffectiveURI()
+    core = core_interface.CoreInterface(uri)
     clipboard = qApp.clipboard()
     cashier = Cashier(core, clipboard)
     cashier.show()
