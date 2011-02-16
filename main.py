@@ -115,8 +115,13 @@ class RootWindow(QMainWindow):
         self.refresh_state()
 
     def refresh_state(self):
+        is_init = False
         if self.state == self.CLIENT_NONE:
             self.state = self.CLIENT_CONNECTING
+            try:
+                is_init = self.core.is_initialised()
+            except:
+                pass
             # show initialising dialog
             self.tray.create_connecting()
         elif self.state == self.CLIENT_CONNECTING:
@@ -128,10 +133,10 @@ class RootWindow(QMainWindow):
                 error.exec_()
                 qApp.quit()
                 raise
-            if is_init:
-                # some voodoo here checking whether we have blocks
-                self.state = self.CLIENT_RUNNING
-                self.tray.create_cashier()
+        if is_init:
+            # some voodoo here checking whether we have blocks
+            self.state = self.CLIENT_RUNNING
+            self.tray.create_cashier()
 
     def closeEvent(self, event):
         super(RootWindow, self).closeEvent(event)
