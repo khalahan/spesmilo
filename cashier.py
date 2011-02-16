@@ -69,6 +69,7 @@ class TransactionsTable(QTableWidget):
         self.insertRow(0)
         confirms = transaction['confirmations']
         unixtime = transaction['time']
+        address = '(not available)'
         if 'address' in transaction:
             address = transaction['address']
         credit =  transaction['amount']
