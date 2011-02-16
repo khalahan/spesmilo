@@ -104,13 +104,17 @@ class RootWindow(QMainWindow):
 
     def __init__(self):
         super(RootWindow, self).__init__()
-        self.uri = SpesmiloSettings.getEffectiveURI()
-        self.core = core_interface.CoreInterface(self.uri)
+        
         icon = lambda s: QIcon('./icons/' + s)
         self.bitcoin_icon = icon('bitcoin32.xpm')
+        
+        self.state = self.CLIENT_NONE
+    
+    def start(self):
+        self.uri = SpesmiloSettings.getEffectiveURI()
+        self.core = core_interface.CoreInterface(self.uri)
         self.tray = TrayIcon(self.core, self)
 
-        self.state = self.CLIENT_NONE
         refresh_state_timer = QTimer(self)
         refresh_state_timer.timeout.connect(self.refresh_state)
         refresh_state_timer.start(1000)
@@ -163,17 +167,24 @@ class RootWindow(QMainWindow):
         finally:
             qApp.quit()
 
-if __name__ == '__main__':
-    import os
-    import sys
-
-    app = QApplication(sys.argv)
+def _startup(rootwindow):
     if SpesmiloSettings.useInternalCore():
+        import os
         os.system('bitcoind')
+    rootwindow.start()
+
+if __name__ == '__main__':
+    import sys
+    app = QApplication(sys.argv)
     translator = QTranslator()
     #translator.load('il8n/eo_EO')
     app.installTranslator(translator)
     app.setQuitOnLastWindowClosed(False)
     rootwindow = RootWindow()
+    if SpesmiloSettings.isConfigured():
+        _startup(rootwindow)
+    else:
+        sd = SettingsDialog(rootwindow)
+        sd.accepted.connect(lambda: _startup(rootwindow))
+        sd.rejected.connect(lambda: qApp.quit())
     sys.exit(app.exec_())
-

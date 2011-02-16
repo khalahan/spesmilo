@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import os
 from PySide.QtCore import *
 from PySide.QtGui import *
 
@@ -112,6 +113,10 @@ class SettingsDialog(QDialog):
         self.applybtn.setEnabled(True)
 
 class SpesmiloSettings:
+    def isConfigured(self):
+        NC = 'NOT CONFIGURED'
+        return _settings.value('core/internal', NC) != NC
+    
     def useInternalCore(self):
         return _settings.value('core/internal', 'True') != 'False'
     
@@ -123,7 +128,6 @@ class SpesmiloSettings:
 SpesmiloSettings = SpesmiloSettings()
 
 if __name__ == '__main__':
-    import os
     import sys
     translator = QTranslator()
     #translator.load('data/translations/eo_EO')
