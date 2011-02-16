@@ -27,5 +27,8 @@ class CoreInterface:
         return self.access.getnewaddress('')
     
     def is_initialised(self):
-        return self.access.getinfo()['isinitialized']
-
+        info = self.access.getinfo()
+        if 'isinitialized' in info:
+            return info['isinitialized']
+        # This only happens on older bitcoind which only respond when initialized...
+        return True
