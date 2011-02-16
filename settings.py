@@ -112,10 +112,13 @@ class SettingsDialog(QDialog):
         self.applybtn.setEnabled(True)
 
 class SpesmiloSettings:
+    def useInternalCore(self):
+        return _settings.value('core/internal', 'True') != 'False'
+    
     def getEffectiveURI(self):
-        if _settings.value('core/internal', 'True') == 'False':
-            return _settings.value('core/uri', 'http://user:pass@localhost:8332')
-        return 'http://user:pass@localhost:8332'
+        if self.useInternalCore():
+            return 'http://user:pass@localhost:8332'
+        return _settings.value('core/uri', 'http://user:pass@localhost:8332')
 
 SpesmiloSettings = SpesmiloSettings()
 

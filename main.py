@@ -146,16 +146,17 @@ class RootWindow(QMainWindow):
 
     def stop(self):
         try:
-            # Keep looping until connected so we can issue the stop command
-            while True:
-                try:
-                    self.core.stop()
-                except core_interface.JSONRPCException:
-                    pass
-                except:
-                    raise
-                else:
-                    break
+            if SpesmiloSettings.useInternalCore():
+                # Keep looping until connected so we can issue the stop command
+                while True:
+                    try:
+                        self.core.stop()
+                    except core_interface.JSONRPCException:
+                        pass
+                    except:
+                        raise
+                    else:
+                        break
         # Re-proprogate exception & trigger app exit so we can break out
         except:
             raise
@@ -166,8 +167,9 @@ if __name__ == '__main__':
     import os
     import sys
 
-    os.system('bitcoind')
     app = QApplication(sys.argv)
+    if SpesmiloSettings.useInternalCore():
+        os.system('bitcoind')
     translator = QTranslator()
     #translator.load('il8n/eo_EO')
     app.installTranslator(translator)
