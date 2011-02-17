@@ -39,6 +39,8 @@ class CoreInterface:
 
     def send(self, address, amount):
         if self.rpcversion == 0:
+            if amount % 1000000:
+                raise ValueError('This server does not support precision requested')
             amount /= 100000000.
         return self.access.sendtoaddress(address, amount)
 

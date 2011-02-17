@@ -71,7 +71,15 @@ class SendDialog(QDialog):
             self.reject()
             return
 
-        self.core.send(addy, humanToAmount(amount))
+        try:
+            self.core.send(addy, humanToAmount(amount))
+        except Exception, e:
+            error = QMessageBox(QMessageBox.Critical, 
+                                self.tr('Error sending'),
+                            self.tr('Your send failed: %s') % (e,))
+            error.exec_()
+            self.reject()
+            return
         self.accept()
 
 if __name__ == '__main__':
