@@ -124,8 +124,31 @@ class SpesmiloSettings:
         if self.useInternalCore():
             return 'http://user:pass@localhost:8332'
         return _settings.value('core/uri', 'http://user:pass@localhost:8332')
+    
+    def humanAmount(self, n, wantTLA = False):
+        try:
+            if float(n) != n:
+                raise ValueError()
+        except ValueError:
+            return n
+        n = n / 100000000.
+        s = "%.2f" % (n,)
+        if float(s) == n:
+            n = s
+        else:
+            n = str(n)
+        if wantTLA:
+            n += " BTC"
+        return n
+
+    def humanToAmount(self, s):
+        s = float(s)
+        s = int(s * 100000000)
+        return s
 
 SpesmiloSettings = SpesmiloSettings()
+humanAmount = SpesmiloSettings.humanAmount
+humanToAmount = SpesmiloSettings.humanToAmount
 
 if __name__ == '__main__':
     import sys

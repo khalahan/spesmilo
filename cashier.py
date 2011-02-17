@@ -2,6 +2,7 @@ from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide.QtWebKit import *
 import send
+from settings import humanAmount
 
 class FocusLineEdit(QLineEdit):
     def __init__(self, text):
@@ -106,10 +107,10 @@ class TransactionsTable(QTableWidget):
         trans_item = TransactionItem(description)
         self.setItem(0, 2, trans_item)
 
-        credits_item = TransactionItem(str(credit), Qt.AlignRight)
+        credits_item = TransactionItem(humanAmount(credit), Qt.AlignRight)
         self.setItem(0, 3, credits_item)
 
-        balance_item = TransactionItem(str(balance), Qt.AlignRight)
+        balance_item = TransactionItem(humanAmount(balance), Qt.AlignRight)
         self.setItem(0, 4, balance_item)
 
         if row_disabled:
@@ -216,7 +217,7 @@ class Cashier(QDialog):
             self.transactions_table.add_transaction_entry(t)
 
     def refresh_balance(self):
-        bltext = self.tr('Balance: %.2f BTC')%self.core.balance()
+        bltext = self.tr('Balance: %s') % (humanAmount(self.core.balance(), True),)
         self.balance_label.setText(bltext)
 
     def create_actions(self):

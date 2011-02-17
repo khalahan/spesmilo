@@ -1,6 +1,7 @@
 from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide.QtWebKit import *
+from settings import humanAmount, humanToAmount
 
 class SendDialog(QDialog):
     def __init__(self, core, parent):
@@ -65,12 +66,12 @@ class SendDialog(QDialog):
         if amount > balance:
             error = QMessageBox(QMessageBox.Critical, 
                                 self.tr('Insufficient balance'),
-                            self.tr('Balance of %g is too small.')%balance)
+                            self.tr('Balance of %g is too small.') % (humanAmount(balance),))
             error.exec_()
             self.reject()
             return
 
-        self.core.send(addy, amount)
+        self.core.send(addy, humanToAmount(amount))
         self.accept()
 
 if __name__ == '__main__':
