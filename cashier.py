@@ -1,3 +1,4 @@
+import re
 from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide.QtWebKit import *
@@ -66,16 +67,15 @@ class TransactionsTable(QTableWidget):
         for i, sz in enumerate(newszs):
             self.horizontalHeader().resizeSection(i, sz)
 
-    def add_transaction_entry(self, transaction):
-        self.insertRow(0)
-        confirms = transaction['confirmations']
-        unixtime = transaction['time']
-        address = '(not available)'
-        if 'address' in transaction:
-            address = transaction['address']
-        credit =  transaction['amount']
-        balance = 'N/A'
-        category = transaction['category']
+    def update_confirmation(self, i, increment):
+        status_item = self.item(i, 0)
+        status = status_item.text()
+        m = re.search('(?<=\()\d+(?=\))', status)
+        if not m:
+            return
+        A = m.start()
+        B = m.end()
+        confirms = int(status[A:B]) + increment
 
         row_disabled = False
         if confirms > 5:
@@ -85,7 +85,27 @@ class TransactionsTable(QTableWidget):
         else:
             status = self.tr('Validating... (%i)')%confirms
             row_disabled = True
-        status_item = TransactionItem(status)
+
+        status_item.setText(status)
+
+        sf = self.disable_table_item if row_disabled else self.enable_table_item
+        for j in range(0, 5):
+            sf(self.item(i, j))
+
+    def add_transaction_entry(self, transaction):
+        self.insertRow(0)
+        confirms = 'N/A'
+        if 'confirmations' in transaction:
+            confirms = transaction['confirmations']
+        unixtime = transaction['time']
+        address = 'N/A'
+        if 'address' in transaction:
+            address = transaction['address']
+        credit =  transaction['amount']
+        balance = 'N/A'
+        category = transaction['category']
+
+        status_item = TransactionItem('(0)' if confirms != 'N/A' else 'N/A')
         self.setItem(0, 0, status_item)
 
         date_formatter = QDateTime()
@@ -104,6 +124,8 @@ class TransactionsTable(QTableWidget):
             description = self.tr('Received to %s')%address
         elif category == 'generate':
             description = self.tr('Generated')
+        elif category == 'move':
+            description = self.tr('Moved')
         trans_item = TransactionItem(description)
         self.setItem(0, 2, trans_item)
 
@@ -113,12 +135,20 @@ class TransactionsTable(QTableWidget):
         balance_item = TransactionItem(humanAmount(balance), Qt.AlignRight)
         self.setItem(0, 4, balance_item)
 
-        if row_disabled:
-            self.disable_table_item(status_item)
-            self.disable_table_item(date_item)
-            self.disable_table_item(trans_item)
-            self.disable_table_item(credits_item)
-            self.disable_table_item(balance_item)
+        self.update_confirmation(0, confirms)
+
+    def update_confirmations(self, increment):
+        for i in range(0, self.rowCount()):
+            self.update_confirmation(i, increment)
+
+    def enable_table_item(self, item):
+        dummy = QTableWidgetItem()
+        brush = item.foreground()
+        brush.setColor(dummy.foreground().color())
+        item.setForeground(brush)
+        font = item.font()
+        font.setStyle(dummy.font().style())
+        item.setFont(font)
 
     def disable_table_item(self, item):
         brush = item.foreground()
@@ -181,8 +211,9 @@ class Cashier(QDialog):
         refresh_info_timer = QTimer(self)
         refresh_info_timer.timeout.connect(self.refresh_info)
         refresh_info_timer.start(1000)
-        # Stores time of last transaction added to the table
-        self.last_tx_time = 0
+        # Stores last transaction added to the table
+        self.last_tx = None
+        self.last_tx_with_confirmations = None
         # Used for updating number of confirms
         #   key=txid, category  val=row, confirms
         self.trans_lookup = {}
@@ -197,27 +228,43 @@ class Cashier(QDialog):
         self.refresh_transactions()
 
     def refresh_transactions(self):
-        #transactions = [t for t in self.core.transactions() if t['time'] > self.last_tx_time]
-        transactions = self.core.transactions()
-        self.transactions_table.clearContents()
-        self.transactions_table.setRowCount(0)
-        # whether list has updates
-        #if not transactions:
-        #    return
-        #self.last_tx_time = transactions[-1]['time']
-        transactions.sort(key=lambda t: t['time'])
+        fetchtx = 1000
+        if self.last_tx is not None:
+            fetchtx = 10
+        transactions = self.core.transactions('*', fetchtx)
 
-        #txids = [t['txid'] for t in transactions]
-        # remove duplicates
-        #txids = list(set(txids))
-        #for txid in txids:
-        #    mattrans = [t for t in transactions if t['txid'] == txid]
+        transactions.reverse()
+        otl = []
+        nomore = False
+        for t in transactions:
+            txid = t['txid'] if 'txid' in t else False
+            if txid == self.last_tx_with_confirmations:
+                confirms = t['confirmations']
+                ci = confirms - self.last_tx_with_confirmations_n
+                if ci:
+                    self.transactions_table.update_confirmations(ci)
+                self.last_tx_with_confirmations_n = confirms
+                break
+            if nomore:
+                continue
+            if txid == self.last_tx:
+                nomore = True
+                continue
+            otl.append(t)
+        transactions = otl
+        if not transactions:
+            return
+        transactions.reverse()
 
         for t in transactions:
             self.transactions_table.add_transaction_entry(t)
+            if 'confirmations' in t:
+                self.last_tx_with_confirmations = t['txid']
+                self.last_tx_with_confirmations_n = t['confirmations']
+        self.last_tx = transactions[-1]['txid']
 
     def refresh_balance(self):
-        bltext = self.tr('Balance: %s') % (humanAmount(self.core.balance(), True),)
+        bltext = self.tr('Balance: %s') % (humanAmount(self.core.balance(), wantTLA=True),)
         self.balance_label.setText(bltext)
 
     def create_actions(self):

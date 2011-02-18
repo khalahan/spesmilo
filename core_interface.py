@@ -19,8 +19,8 @@ class CoreInterface:
             return int(n * 100000000)
         return int(n)
 
-    def transactions(self):
-        txl = self.access.listtransactions()
+    def transactions(self, *args):
+        txl = self.access.listtransactions(*args)
         for tx in txl:
             for k in ('amount', 'fee'):
                 if k in tx: tx[k] = self._fromAmount(tx[k])
