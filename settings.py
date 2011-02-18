@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
+from decimal import Decimal
 import os
+import re
 from PySide.QtCore import *
 from PySide.QtGui import *
 
@@ -47,6 +49,40 @@ class SettingsTabCore(QWidget):
         self.lblURI.setEnabled(en)
         self.leURI.setEnabled(en)
 
+class SettingsTabUnits(QWidget):
+    def __init__(self, parent, enableApply = None):
+        super(SettingsTabUnits, self).__init__(parent)
+        
+        nslay = QFormLayout()
+        self.numsys = QComboBox(self)
+        self.numsys.addItem(self.tr('Decimal'), 'Decimal')
+        self.numsys.addItem(self.tr('Tonal'), 'Tonal')
+        nslay.addRow(self.tr('Number system:'), self.numsys)
+        
+        self.strength = QComboBox()
+        self.strength.addItem(self.tr('Assume'), 'Assume')
+        self.strength.addItem(self.tr('Prefer'), 'Prefer')
+        self.strength.addItem(self.tr('Force'), 'Force')
+        nslay.addRow(self.tr('Selection strength:'), self.strength)
+
+        mainlay = QVBoxLayout(self)
+        mainlay.addLayout(nslay)
+        
+        if enableApply is not None:
+            self.numsys.currentIndexChanged.connect(lambda: enableApply())
+            self.strength.currentIndexChanged.connect(lambda: enableApply())
+    
+    def loadSettings(self, settings = None):
+        self.numsys.setCurrentIndex(self.numsys.findData(settings.value('units/numsys', 'Decimal')))
+        self.strength.setCurrentIndex(self.strength.findData(settings.value('units/strength', 'Assume')))
+    
+    def checkSettings(self):
+        pass
+    
+    def saveSettings(self, settings = None):
+        settings.setValue('units/numsys', self.numsys.itemData(self.numsys.currentIndex()))
+        settings.setValue('units/strength', self.strength.itemData(self.strength.currentIndex()))
+
 class SettingsDialog(QDialog):
     def __init__(self, parent):
         super(SettingsDialog, self).__init__(parent)
@@ -55,10 +91,11 @@ class SettingsDialog(QDialog):
         
         tabw = QTabWidget()
         
-        self.tabs = {}
-        self.tabs['Core'] = SettingsTabCore(self, self.enableApply)
+        self.tabs = []
+        self.tabs.append(('Core', SettingsTabCore(self, self.enableApply)))
+        self.tabs.append(('Units', SettingsTabUnits(self, self.enableApply)))
         
-        for name, widget in self.tabs.items():
+        for name, widget in self.tabs:
             tabw.addTab(widget, name)
         
         mainlay = QVBoxLayout(self)
@@ -95,17 +132,17 @@ class SettingsDialog(QDialog):
     
     def loadSettings(self):
         settings = self.settings
-        for widget in self.tabs.values():
+        for x, widget in self.tabs:
             widget.loadSettings(settings)
         self.applybtn.setEnabled(False)
     
     def checkSettings(self):
-        for widget in self.tabs.values():
+        for x, widget in self.tabs:
             widget.checkSettings()
         
     def saveSettings(self):
         settings = self.settings
-        for widget in self.tabs.values():
+        for x, widget in self.tabs:
             widget.saveSettings(settings)
         self.applybtn.setEnabled(False)
 
@@ -125,26 +162,119 @@ class SpesmiloSettings:
             return 'http://user:pass@localhost:8332'
         return _settings.value('core/uri', 'http://user:pass@localhost:8332')
     
-    def humanAmount(self, n, wantTLA = False):
+    def _toBTC(self, n, addSign = False, wantTLA = False):
+        n = Decimal(n) / 100000000
+        if not n % Decimal('.1'):
+            n = n.quantize(Decimal('0.00'))
+            s = str(n)
+        else:
+            s = str(int(n)) + str(abs(n % 1) + 1)[1:]
+            if n < 0:
+                s = '-' + s
+        if addSign and n >= 0:
+                s = "+" + s
+        if wantTLA:
+            s += " BTC"
+        return s
+    
+    def getNumberSystem(self):
+        return _settings.value('units/numsys', 'Decimal')
+    
+    def getNumberSystemStrength(self):
+        return _settings.value('units/strength', 'Assume')
+    
+    def _fromBTC(self, s):
+        s = float(s)
+        s = int(s * 100000000)
+        return s
+    
+    _toTonalDict = dict(((57, u'\ue9d9'), (65, u'\ue9da'), (66, u'\ue9db'), (67, u'\ue9dc'), (68, u'\ue9dd'), (69, u'\ue9de'), (70, u'\ue9df'), (97, u'\ue9da'), (98, u'\ue9db'), (99, u'\ue9dc'), (100, u'\ue9dd'), (101, u'\ue9de'), (102, u'\ue9df')))
+    def _toTBC(self, n, addSign = False, wantTLA = False):
+        n /= float(0x10000)
+        s = "%x" % n
+        n = abs(n) % 1
+        if n:
+            s += '.'
+            while n:
+                n *= 16
+                s += "%x" % n
+                n %= 1
+        s = unicode(s).translate(self._toTonalDict)
+        if addSign and n >= 0:
+                s = "+" + s
+        if wantTLA:
+            s += " TBC"
+        return s
+    
+    _fromTonalDict = dict(((0xe9d9, u'9'), (0xe9da, u'a'), (57, u'a'), (0xe9db, u'b'), (0xe9dc, u'c'), (0xe9dd, u'd'), (0xe9de, u'e'), (0xe9df, u'f')))
+    def _fromTBC(self, s):
+        s = unicode(s).translate(self._fromTonalDict)
+        try:
+            i = s.index('.')
+        except ValueError:
+            i = len(s)
+        n = 0
+        if i:
+            n = int(s[:i], 16)
+        n *= 0x10000
+        for j in range(1, len(s) - i):
+            d = int(s[i+j], 16)
+            n += (d * 0x10000) / (16 ** j)
+        return n
+    
+    def humanAmount(self, n, addSign = False, wantTLA = False):
         try:
             if float(n) != n:
                 raise ValueError()
         except ValueError:
             return n
-        n = n / 100000000.
-        s = "%.2f" % (n,)
-        if float(s) == n:
-            n = s
+        ns = self.getNumberSystem()
+        nss = self.getNumberSystemStrength()
+        ens = None
+        if nss != 'Force' and n:
+            # If it's only valid as one, and not the other, choose it
+            ivD = 0 == n % 1000000
+            ivT = 0 == n % 0x100
+            if ivD and not ivT:
+                ens = 'Decimal'
+            elif ivT and not ivD:
+                ens = 'Tonal'
+            # If it could be either, pick the more likely one (only with 'Assume')
+            elif ivD and nss == 'Assume':
+                dn = n / 1000000
+                tn = n / 0x100
+                while ens is None:
+                    if dn % 4:
+                        if tn % 5:
+                            break
+                        ens = 'Tonal'
+                    elif tn % 5:
+                        ens = 'Decimal'
+                    dn /= 5
+                    tn /= 4
+        if ens is None: ens = ns
+        if ens != ns:
+            wantTLA = True
+        if ens == 'Tonal':
+            ens = self._toTBC
         else:
-            n = str(n)
-        if wantTLA:
-            n += " BTC"
-        return n
+            ens = self._toBTC
+        return ens(n, addSign, wantTLA)
 
     def humanToAmount(self, s):
-        s = float(s)
-        s = int(s * 100000000)
-        return s
+        ens = self.getNumberSystem()
+        m = re.search('\s*\\b(BTC|TBC)\s*$', s, re.IGNORECASE)
+        if m:
+            if m.group(1) == 'TBC':
+                ens = 'Tonal'
+            else:
+                ens = 'Decimal'
+            s = s[:m.start()]
+        if ens == 'Tonal':
+            ens = self._fromTBC
+        else:
+            ens = self._fromBTC
+        return ens(s)
 
 SpesmiloSettings = SpesmiloSettings()
 humanAmount = SpesmiloSettings.humanAmount
