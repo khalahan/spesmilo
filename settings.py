@@ -244,14 +244,16 @@ class SpesmiloSettings:
                 dn = n / 1000000
                 tn = n / 0x100
                 while ens is None:
-                    if dn % 4:
-                        if tn % 5:
+                    dm = dn % 10 not in (0, 5)
+                    tm = tn % 0x10 not in (0, 8)
+                    if dm:
+                        if tm:
                             break
                         ens = 'Tonal'
-                    elif tn % 5:
+                    elif tm:
                         ens = 'Decimal'
-                    dn /= 5
-                    tn /= 4
+                    dn /= 10.
+                    tn /= 16.
         if ens is None: ens = ns
         if ens != ns:
             wantTLA = True
