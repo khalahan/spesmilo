@@ -1,7 +1,7 @@
 from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide.QtWebKit import *
-from settings import humanAmount, humanToAmount
+from settings import humanAmount, humanToAmount, SpesmiloSettings
 
 class SendDialog(QDialog):
     def __init__(self, core, parent):
@@ -17,10 +17,19 @@ class SendDialog(QDialog):
         dv = QDoubleValidator(self.amount)
         dv.setDecimals(2)
         dv.setNotation(QDoubleValidator.StandardNotation)
-        self.amount.setValidator(dv)
+        self.dv = dv
+        tv = QRegExpValidator(QRegExp('-?(?:[\d\\xe9d9-\\xe9df]+\.?|[\d\\xe9d9-\\xe9df]*\.[\d\\xe9d9-\\xe9df]{1,4})'), self.amount)
+        self.tv = tv
+        self.amount_unit = QComboBox(self)
+        self.amount_unit.addItem(self.tr("BTC"), "BTC")
+        self.amount_unit.addItem(self.tr("TBC"), "TBC")
+        self.amount_unit.currentIndexChanged.connect(self.update_validator)
+        prefunit = 'TBC' if SpesmiloSettings.getNumberSystem() == 'Tonal' else 'BTC'
+        self.amount_unit.setCurrentIndex(self.amount_unit.findData(prefunit))
         formlay.addRow(self.tr('Pay to:'), self.destaddy)
         amountlay = QHBoxLayout()
         amountlay.addWidget(self.amount)
+        amountlay.addWidget(self.amount_unit)
         amountlay.addStretch()
         formlay.addRow(self.tr('Amount:'), amountlay)
 
@@ -45,6 +54,16 @@ class SendDialog(QDialog):
             self.setWindowIcon(parent.bitcoin_icon)
         self.setWindowTitle(self.tr('Send bitcoins'))
         self.show()
+        self.destaddy.setFocus()
+
+    def update_validator(self):
+        u = self.amount_unit.itemData(self.amount_unit.currentIndex())
+        if u == 'BTC':
+            self.amount.setValidator(self.dv)
+        elif u == 'TBC':
+            self.amount.setValidator(self.tv)
+        else:
+            self.amount.setValidator(None)
 
     def do_payment(self):
         if not self.amount.text():
@@ -61,7 +80,10 @@ class SendDialog(QDialog):
             self.reject()
             return
 
-        amount = float(self.amount.text())
+        amount = self.amount.text()
+        amount += ' ' + self.amount_unit.itemData(self.amount_unit.currentIndex())
+        amount = humanToAmount(amount)
+
         balance = self.core.balance()
         if amount > balance:
             error = QMessageBox(QMessageBox.Critical, 
@@ -72,7 +94,7 @@ class SendDialog(QDialog):
             return
 
         try:
-            self.core.send(addy, humanToAmount(amount))
+            self.core.send(addy, amount)
         except Exception, e:
             error = QMessageBox(QMessageBox.Critical, 
                                 self.tr('Error sending'),
