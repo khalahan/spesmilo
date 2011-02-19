@@ -42,6 +42,8 @@ class CoreInterface:
             if amount % 1000000:
                 raise ValueError('This server does not support precision requested')
             amount /= 100000000.
+        if amount % 1:
+            raise ValueError('Bitcoin does not support precision requested')
         return self.access.sendtoaddress(address, amount)
 
     def default_address(self):
