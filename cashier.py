@@ -237,6 +237,8 @@ class Cashier(QDialog):
         otl = []
         nomore = False
         for t in transactions:
+            if 'txid' not in t:
+                continue
             txid = t['txid'] if 'txid' in t else False
             if txid == self.last_tx_with_confirmations:
                 confirms = t['confirmations']
