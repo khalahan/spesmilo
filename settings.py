@@ -169,7 +169,7 @@ class SpesmiloSettings:
             s = str(n)
         else:
             s = str(int(n)) + str(abs(n % 1) + 1)[1:]
-            if n < 0:
+            if n < 0 and int(n) == 0:
                 s = '-' + s
         if addSign and n >= 0:
                 s = "+" + s
