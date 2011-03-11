@@ -38,12 +38,12 @@ class CoreInterface:
         return self.access.validateaddress(address)['isvalid']
 
     def send(self, address, amount):
+        if amount % 1:
+            raise ValueError('Bitcoin does not support precision requested')
         if self.rpcversion == 0:
             if amount % 1000000 and self.access.getinfo()['version'] < 32100:
                 raise ValueError('This server does not support precision requested')
             amount /= 100000000.
-        if amount % 1:
-            raise ValueError('Bitcoin does not support precision requested')
         return self.access.sendtoaddress(address, amount)
 
     def default_address(self):
