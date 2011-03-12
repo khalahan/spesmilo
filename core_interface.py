@@ -26,6 +26,15 @@ class CoreInterface:
                 if k in tx: tx[k] = self._fromAmount(tx[k])
         return txl
 
+    def get_transaction(self, txid):
+        # NOTE: returns a list like transactions, in case we both sent and received
+        tx = self.access.gettransaction(txid)
+        for detail in tx['details']:
+            for k, v in tx.iteritems():
+                if k == 'details': continue
+                detail[k] = v
+        return tx['details']
+
     def balance(self):
         b = self.access.getbalance()
         b = self._fromAmount(b)
