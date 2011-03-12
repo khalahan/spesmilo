@@ -6,11 +6,17 @@ class CoreInterface:
         self.access = jsonrpc.ServiceProxy(uri)
         self.rpcversion = 0
         try:
-            if self.access.bitcoin.__getattr__('1').getinfo()['rpcversion'] != 1:
+            try:
+                info = self.access.bitcoin.__getattr__('1').getinfo()
+                new_access = self.access.bitcoin.__getattr__('1')
+            except JSONRPCException:
+                info = self.access.bitcoin.v1.getinfo()
+                new_access = self.access.bitcoin.v1
+            if info['rpcversion'] != 1:
                 raise JSONRPCException()
             # If we get this far, RPCv1 is supported
             self.rpcversion = 1
-            self.access = self.access.bitcoin.__getattr__('1')
+            self.access = new_access
         except JSONRPCException:
             pass
 
