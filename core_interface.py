@@ -3,22 +3,20 @@ from jsonrpc.proxy import JSONRPCException
 
 class CoreInterface:
     def __init__(self, uri):
-        self.access = jsonrpc.ServiceProxy(uri)
+        basea = jsonrpc.ServiceProxy(uri)
         self.rpcversion = 0
-        try:
+        for access in (basea.bitcoin.__getattr__('1'), basea.bitcoin.v1, basea):
             try:
-                info = self.access.bitcoin.__getattr__('1').getinfo()
-                new_access = self.access.bitcoin.__getattr__('1')
+                info = access.getinfo()
             except JSONRPCException:
-                info = self.access.bitcoin.v1.getinfo()
-                new_access = self.access.bitcoin.v1
-            if info['rpcversion'] != 1:
-                raise JSONRPCException()
-            # If we get this far, RPCv1 is supported
-            self.rpcversion = 1
-            self.access = new_access
-        except JSONRPCException:
-            pass
+                continue
+            if not 'rpcversion' in info:
+                info['rpcversion'] = 0
+            if not info['rpcversion'] in (0, 1):
+                continue
+            self.rpcversion = info['rpcversion']
+            self.access = access
+            break
 
     def _fromAmount(self, n):
         if self.rpcversion == 0:
