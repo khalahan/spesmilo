@@ -1,10 +1,12 @@
+from decimal import Decimal
+import re
 from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide.QtWebKit import *
 from settings import humanAmount, humanToAmount, SpesmiloSettings
 
 class SendDialog(QDialog):
-    def __init__(self, core, parent):
+    def __init__(self, core, parent, uri = None):
         super(SendDialog, self).__init__(parent)
         self.core = core
         
@@ -53,8 +55,49 @@ class SendDialog(QDialog):
         if parent is not None:
             self.setWindowIcon(parent.bitcoin_icon)
         self.setWindowTitle(self.tr('Send bitcoins'))
+
+        if not uri is None:
+            self.load_uri(uri)
+
         self.show()
         self.destaddy.setFocus()
+
+    def load_uri(self, uri):
+        m = re.match(r'^bitcoin\:([1-9A-HJ-NP-Za-km-z]+)(?:\?(.*))?$', uri)
+        if m is None:
+            raise RuntimeError('Invalid bitcoin URI')
+        addr = m.group(1)
+        query = m.group(2)
+        param = {}
+        if not query is None:
+            query = re.split(r'[&?;]', query)
+            for q in query:
+                k, v = q.split('=', 1)
+                param[k] = v
+        self.destaddy.setText(addr)
+        if 'amount' in param:
+            amount = param['amount']
+            m = re.match(r'^(([\d.]+)(X(\d+))?|x([\da-f]*)(\.([\da-f]*))?(X([\da-f]+))?)$', amount, re.IGNORECASE)
+            if m.group(5):
+                # TBC
+                amount = float(int(m.group(5), 16))
+                if m.group(7):
+                    amount += float(int(m.group(7), 16)) * pow(16, -(len(m.group(7))))
+                if m.group(9):
+                    amount *= pow(16, int(m.group(9), 16))
+                else:
+                    amount *= 0x10000
+                self.amount_unit.setCurrentIndex(self.amount_unit.findData('TBC'))
+                amount = SpesmiloSettings._toTBC(amount, addSign=False, wantTLA=False)
+            else:
+                amount = Decimal(m.group(2))
+                if m.group(4):
+                    amount *= Decimal(10) ** (int(m.group(4)))
+                else:
+                    amount *= 100000000
+                self.amount_unit.setCurrentIndex(self.amount_unit.findData('BTC'))
+                amount = SpesmiloSettings._toBTC(amount, addSign=False, wantTLA=False)
+            self.amount.setText(amount)
 
     def update_validator(self):
         u = self.amount_unit.itemData(self.amount_unit.currentIndex())
@@ -115,5 +158,5 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     uri = SpesmiloSettings.getEffectiveURI()
     core = core_interface.CoreInterface(uri)
-    send = SendDialog(core, None)
+    send = SendDialog(core, None, sys.argv[1])
     sys.exit(app.exec_())
