@@ -221,8 +221,8 @@ class SpesmiloSettings:
             d = int(s[i+j], 16)
             n += (d * 0x10000) / (16 ** j)
         return n
-    
-    def humanAmount(self, n, addSign = False, wantTLA = False):
+
+    def ChooseUnits(self, n, guess = None):
         try:
             if float(n) != n:
                 raise ValueError()
@@ -241,6 +241,8 @@ class SpesmiloSettings:
                 ens = 'Tonal'
             # If it could be either, pick the more likely one (only with 'Assume')
             elif ivD and nss == 'Assume':
+                if not guess is None:
+                    ens = guess
                 dn = n / 1000000
                 tn = n / 0x100
                 while ens is None:
@@ -255,6 +257,11 @@ class SpesmiloSettings:
                     dn /= 10.
                     tn /= 16.
         if ens is None: ens = ns
+        return ens
+
+    def humanAmount(self, n, addSign = False, wantTLA = False):
+        ns = self.getNumberSystem()
+        ens = self.ChooseUnits(n)
         if ens != ns:
             wantTLA = True
         if ens == 'Tonal':
