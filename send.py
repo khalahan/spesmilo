@@ -78,6 +78,8 @@ class SendDialog(QDialog):
         if 'amount' in param:
             amount = param['amount']
             m = re.match(r'^(([\d.]+)(X(\d+))?|x([\da-f]*)(\.([\da-f]*))?(X([\da-f]+))?)$', amount, re.IGNORECASE)
+            NU = SpesmiloSettings.getNumberSystem()
+            NUS = SpesmiloSettings.getNumberSystemStrength()
             if m.group(5):
                 # TBC
                 amount = float(int(m.group(5), 16))
@@ -87,14 +89,21 @@ class SendDialog(QDialog):
                     amount *= pow(16, int(m.group(9), 16))
                 else:
                     amount *= 0x10000
-                self.amount_unit.setCurrentIndex(self.amount_unit.findData('TBC'))
-                amount = SpesmiloSettings._toTBC(amount, addSign=False, wantTLA=False)
+                if NUS == 'Assume': NU = 'Tonal'
+                elif NUS == 'Prefer' and amount % 1000000: NU = 'Tonal'
             else:
                 amount = Decimal(m.group(2))
                 if m.group(4):
-                    amount *= Decimal(10) ** (int(m.group(4)))
+                    amount *= 10 ** int(m.group(4))
                 else:
                     amount *= 100000000
+                if NUS == 'Assume': NU = 'Decimal'
+                elif NUS == 'Prefer' and amount % 0x100: NU = 'Decimal'
+            amount = int(amount)
+            if NU == 'Tonal':
+                self.amount_unit.setCurrentIndex(self.amount_unit.findData('TBC'))
+                amount = SpesmiloSettings._toTBC(amount, addSign=False, wantTLA=False)
+            else:
                 self.amount_unit.setCurrentIndex(self.amount_unit.findData('BTC'))
                 amount = SpesmiloSettings._toBTC(amount, addSign=False, wantTLA=False)
             self.amount.setText(amount)
