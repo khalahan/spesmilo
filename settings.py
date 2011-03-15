@@ -223,11 +223,8 @@ class SpesmiloSettings:
         return n
 
     def ChooseUnits(self, n, guess = None):
-        try:
-            if float(n) != n:
-                raise ValueError()
-        except ValueError:
-            return n
+        if float(n) != n:
+            raise ValueError()
         ns = self.getNumberSystem()
         nss = self.getNumberSystemStrength()
         ens = None
@@ -261,7 +258,10 @@ class SpesmiloSettings:
 
     def humanAmount(self, n, addSign = False, wantTLA = False):
         ns = self.getNumberSystem()
-        ens = self.ChooseUnits(n)
+        try:
+            ens = self.ChooseUnits(n)
+        except ValueError:
+            return n
         if ens != ns:
             wantTLA = True
         if ens == 'Tonal':
