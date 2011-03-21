@@ -244,6 +244,12 @@ class Cashier(QDialog):
         self.refresh_balance()
         self.refresh_transactions()
 
+    def __etxid(self, t):
+        txid = t['txid']
+        category = t['category']
+        etxid = "%s/%s" % (txid, category)
+        return etxid
+
     def refresh_transactions(self):
         fetchtx = self.txload_initial
         utx = {}
@@ -252,7 +258,7 @@ class Cashier(QDialog):
             fetchtx = 0
             for etxid, status_item in self.unconfirmed_tx:
                 row = self.transactions_table.row(status_item)
-                utx[etxid] = row
+                utx[etxid] = [row, None]
                 # Allow up to 5 wasted refetches in between unconfirmed refetches
                 if row <= fetchtx + 5:
                     fetchtx = row + 1
@@ -262,6 +268,7 @@ class Cashier(QDialog):
         # Sort through fetched transactions, updating confirmation counts
         transactions.reverse()
         otl = []
+        nltwc = None
         nomore = False
         for t in transactions:
             if 'txid' not in t:
@@ -269,19 +276,17 @@ class Cashier(QDialog):
             txid = t['txid'] if 'txid' in t else False
             if 'confirmations' in t:
                 confirms = t['confirmations']
+                if nltwc is None and confirms >= self.transactions_table.final_confirmation:
+                    nltwc = t
                 if txid == self.last_tx_with_confirmations:
                     ci = confirms - self.last_tx_with_confirmations_n
                     if ci:
                         self.transactions_table.update_confirmations(ci)
                     self.last_tx_with_confirmations_n = confirms
                     break
-                category = t['category']
-                etxid = "%s/%s" % (txid, category)
+                etxid = self.__etxid(t)
                 if etxid in utx:
-                    self.transactions_table.update_confirmation(utx[etxid], confirms, adjustment=False)
-                    del utx[etxid]
-                    if etxid in self.unconfirmed_tx:
-                        del self.unconfirmed_tx[etxid]
+                    utx[etxid][1] = (t,)
             if nomore:
                 continue
             if txid == self.last_tx:
@@ -290,6 +295,10 @@ class Cashier(QDialog):
             otl.append(t)
         transactions = otl
 
+        if not nltwc is None:
+            self.last_tx_with_confirmations = nltwc['txid']
+            self.last_tx_with_confirmations_n = nltwc['confirmations']
+
         if transactions:
             transactions.reverse()
 
@@ -297,31 +306,30 @@ class Cashier(QDialog):
             for t in transactions:
                 status_item = self.transactions_table.add_transaction_entry(t)
                 if 'confirmations' not in t: continue
-                if t['confirmations'] >= self.transactions_table.final_confirmation:
-                    self.last_tx_with_confirmations = t['txid']
-                    self.last_tx_with_confirmations_n = t['confirmations']
-                else:
-                    txid = t['txid']
-                    category = t['category']
-                    etxid = "%s/%s" % (txid, category)
+                if t['confirmations'] < self.transactions_table.final_confirmation:
+                    etxid = self.__etxid(t)
                     self.unconfirmed_tx.insert(0, (etxid, status_item) )
             self.last_tx = transactions[-1]['txid']
 
         # Finally, fetch individual tx info for any old unconfirmed tx
         while len(utx):
-            etxid, status_item = utx.items()[0]
+            etxid, data = utx.items()[0]
+            status_item, transactions = data
             txid = etxid[:etxid.index('/')]
-            transactions = self.core.get_transaction(txid)
+            if transactions is None:
+                transactions = self.core.get_transaction(txid)
             for t in transactions:
-                txid = t['txid']
-                category = t['category']
-                etxid = "%s/%s" % (txid, category)
-                confirms = t['confirmations']
+                etxid = self.__etxid(t)
                 if etxid in utx:
-                    self.transactions_table.update_confirmation(utx[etxid], confirms, adjustment=False)
+                    confirms = t['confirmations']
+                    status_item = utx[etxid][0]
+                    self.transactions_table.update_confirmation(status_item, confirms, adjustment=False)
                     del utx[etxid]
-                    if etxid in self.unconfirmed_tx:
-                        del self.unconfirmed_tx[etxid]
+                    if t['confirmations'] >= self.transactions_table.final_confirmation:
+                        for i in xrange(len(self.unconfirmed_tx)):
+                            if self.unconfirmed_tx[i][0] == etxid:
+                                self.unconfirmed_tx[i:i+1] = ()
+                                break
 
     def refresh_balance(self):
         bltext = self.tr('Balance: %s') % (humanAmount(self.core.balance(), wantTLA=True),)
