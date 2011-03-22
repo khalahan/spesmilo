@@ -221,8 +221,9 @@ class Cashier(QDialog):
         self.setAttribute(Qt.WA_DeleteOnClose, False)
 
         self.transactions_table.final_confirmation = 6
-        self.txload_initial = 1000
-        self.txload_poll = 10
+        self.txload_initial = 0x1000
+        self.txload_poll = 8
+        self.txload_waste = 8
 
         refresh_info_timer = QTimer(self)
         refresh_info_timer.timeout.connect(self.refresh_info)
@@ -260,7 +261,7 @@ class Cashier(QDialog):
                 row = self.transactions_table.row(status_item)
                 utx[etxid] = [row, None]
                 # Allow up to 5 wasted refetches in between unconfirmed refetches
-                if row <= fetchtx + 5:
+                if row <= fetchtx + self.txload_waste:
                     fetchtx = row + 1
             fetchtx += self.txload_poll
         transactions = self.core.transactions('*', fetchtx)
