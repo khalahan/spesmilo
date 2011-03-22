@@ -163,5 +163,5 @@ if __name__ == '__main__':
     SpesmiloSettings.loadTranslator()
     uri = SpesmiloSettings.getEffectiveURI()
     core = core_interface.CoreInterface(uri)
-    send = SendDialog(core, None, sys.argv[1])
+    send = SendDialog(core, None, sys.argv[1] if len(sys.argv) > 1 else None)
     sys.exit(app.exec_())
