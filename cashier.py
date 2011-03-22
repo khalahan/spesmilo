@@ -368,9 +368,8 @@ if __name__ == '__main__':
     import core_interface
     from settings import SpesmiloSettings
     os.system('/home/genjix/src/bitcoin/bitcoind')
-    translator = QTranslator()
-    #translator.load('data/translations/eo_EO')
     app = QApplication(sys.argv)
+    SpesmiloSettings.loadTranslator()
     uri = SpesmiloSettings.getEffectiveURI()
     core = core_interface.CoreInterface(uri)
     clipboard = qApp.clipboard()

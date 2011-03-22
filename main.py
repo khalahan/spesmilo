@@ -176,9 +176,7 @@ def _startup(rootwindow):
 if __name__ == '__main__':
     import sys
     app = QApplication(sys.argv)
-    translator = QTranslator()
-    #translator.load('il8n/eo_EO')
-    app.installTranslator(translator)
+    SpesmiloSettings.loadTranslator()
     app.setQuitOnLastWindowClosed(False)
     rootwindow = RootWindow()
     if SpesmiloSettings.isConfigured():

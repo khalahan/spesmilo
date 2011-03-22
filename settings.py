@@ -49,30 +49,37 @@ class SettingsTabCore(QWidget):
         self.lblURI.setEnabled(en)
         self.leURI.setEnabled(en)
 
-class SettingsTabUnits(QWidget):
+class SettingsTabLanguage(QWidget):
     def __init__(self, parent, enableApply = None):
-        super(SettingsTabUnits, self).__init__(parent)
+        super(SettingsTabLanguage, self).__init__(parent)
         
-        nslay = QFormLayout()
-        self.numsys = QComboBox(self)
-        self.numsys.addItem(self.tr('Decimal'), 'Decimal')
-        self.numsys.addItem(self.tr('Tonal'), 'Tonal')
-        nslay.addRow(self.tr('Number system:'), self.numsys)
+        mainlay = QFormLayout(self)
         
+        self.lang = QComboBox()
+        self.lang.addItem(self.tr('American'), 'en_US')
+        self.lang.addItem(self.tr('English'), 'en_GB')
+        self.lang.addItem(self.tr('Esperanto'), 'eo_EO')
+        mainlay.addRow(self.tr('Language:'), self.lang)
+        
+        nslay = QHBoxLayout()
         self.strength = QComboBox()
         self.strength.addItem(self.tr('Assume'), 'Assume')
         self.strength.addItem(self.tr('Prefer'), 'Prefer')
         self.strength.addItem(self.tr('Force'), 'Force')
-        nslay.addRow(self.tr('Selection strength:'), self.strength)
-
-        mainlay = QVBoxLayout(self)
-        mainlay.addLayout(nslay)
+        nslay.addWidget(self.strength)
+        self.numsys = QComboBox(self)
+        self.numsys.addItem(self.tr('Decimal'), 'Decimal')
+        self.numsys.addItem(self.tr('Tonal'), 'Tonal')
+        nslay.addWidget(self.numsys)
+        mainlay.addRow(self.tr('Number system:'), nslay)
         
         if enableApply is not None:
+            self.lang.currentIndexChanged.connect(lambda: enableApply())
             self.numsys.currentIndexChanged.connect(lambda: enableApply())
             self.strength.currentIndexChanged.connect(lambda: enableApply())
     
     def loadSettings(self, settings = None):
+        self.lang.setCurrentIndex(self.lang.findData(settings.value('language/language', 'en_GB')))
         self.numsys.setCurrentIndex(self.numsys.findData(settings.value('units/numsys', 'Decimal')))
         self.strength.setCurrentIndex(self.strength.findData(settings.value('units/strength', 'Assume')))
     
@@ -80,6 +87,8 @@ class SettingsTabUnits(QWidget):
         pass
     
     def saveSettings(self, settings = None):
+        settings.setValue('language/language', self.lang.itemData(self.lang.currentIndex()))
+        SpesmiloSettings.loadTranslator()
         settings.setValue('units/numsys', self.numsys.itemData(self.numsys.currentIndex()))
         settings.setValue('units/strength', self.strength.itemData(self.strength.currentIndex()))
 
@@ -93,7 +102,7 @@ class SettingsDialog(QDialog):
         
         self.tabs = []
         self.tabs.append(('Core', SettingsTabCore(self, self.enableApply)))
-        self.tabs.append(('Units', SettingsTabUnits(self, self.enableApply)))
+        self.tabs.append(('Language', SettingsTabLanguage(self, self.enableApply)))
         
         for name, widget in self.tabs:
             tabw.addTab(widget, name)
@@ -285,14 +294,21 @@ class SpesmiloSettings:
             ens = self._fromBTC
         return ens(s)
 
+    def loadTranslator(self):
+        lang = _settings.value('language/language', 'en_GB')
+        if not hasattr(self, 'translator'):
+            self.translator = QTranslator()
+        self.translator.load('i18n/%s' % (lang,))
+        app = QCoreApplication.instance()
+        app.installTranslator(self.translator)
+
 SpesmiloSettings = SpesmiloSettings()
 humanAmount = SpesmiloSettings.humanAmount
 humanToAmount = SpesmiloSettings.humanToAmount
 
 if __name__ == '__main__':
     import sys
-    translator = QTranslator()
-    #translator.load('data/translations/eo_EO')
     app = QApplication(sys.argv)
+    SpesmiloSettings.loadTranslator()
     dlg = SettingsDialog(None)
     sys.exit(app.exec_())
