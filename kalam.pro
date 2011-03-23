@@ -1,4 +1,4 @@
 SOURCES = main.py cashier.py send.py core_interface.py
-TRANSLATIONS = il8n/en_GB.ts \
-    il8n/eo_EO.ts
+TRANSLATIONS = i18n/en_GB.ts \
+    i18n/eo_EO.ts
 
