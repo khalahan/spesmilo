@@ -264,37 +264,47 @@ class Cashier(QDialog):
                 if row <= fetchtx + self.txload_waste:
                     fetchtx = row + 1
             fetchtx += self.txload_poll
-        transactions = self.core.transactions('*', fetchtx)
+        while True:
+            transactions = self.core.transactions('*', fetchtx)
 
-        # Sort through fetched transactions, updating confirmation counts
-        transactions.reverse()
-        otl = []
-        nltwc = None
-        nomore = False
-        for t in transactions:
-            if 'txid' not in t:
-                continue
-            txid = t['txid'] if 'txid' in t else False
-            if 'confirmations' in t:
-                confirms = t['confirmations']
-                if nltwc is None and confirms >= self.transactions_table.final_confirmation:
-                    nltwc = t
-                if txid == self.last_tx_with_confirmations:
-                    ci = confirms - self.last_tx_with_confirmations_n
-                    if ci:
-                        self.transactions_table.update_confirmations(ci)
-                    self.last_tx_with_confirmations_n = confirms
-                    break
-                etxid = self.__etxid(t)
-                if etxid in utx:
-                    utx[etxid][1] = (t,)
-            if nomore:
-                continue
-            if txid == self.last_tx:
-                nomore = True
-                continue
-            otl.append(t)
-        transactions = otl
+            # Sort through fetched transactions, updating confirmation counts
+            ttf = len(transactions)
+            transactions.reverse()
+            otl = []
+            nltwc = None
+            nomore = False
+            for i in xrange(ttf):
+                t = transactions[i]
+                if 'txid' not in t:
+                    continue
+                txid = t['txid'] if 'txid' in t else False
+                if 'confirmations' in t:
+                    confirms = t['confirmations']
+                    if nltwc is None and confirms >= self.transactions_table.final_confirmation:
+                        nltwc = t
+                    if txid == self.last_tx_with_confirmations:
+                        ci = confirms - self.last_tx_with_confirmations_n
+                        if ci:
+                            self.transactions_table.update_confirmations(ci)
+                        self.last_tx_with_confirmations_n = confirms
+                        continue
+                    etxid = self.__etxid(t)
+                    if etxid in utx:
+                        utx[etxid][1] = (t,)
+                if nomore:
+                    continue
+                if txid == self.last_tx:
+                    nomore = True
+                    if i >= self.txload_poll:
+                        self.txload_poll = i + 1
+                    continue
+                otl.append(t)
+            transactions = otl
+
+            if nomore or fetchtx > ttf: break
+
+            # If we get here, that means we didn't fetch enough to see our last confirmed tx... retry, this time getting more
+            fetchtx *= 2
 
         if not nltwc is None:
             self.last_tx_with_confirmations = nltwc['txid']
