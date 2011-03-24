@@ -288,7 +288,6 @@ class Cashier(QDialog):
                         if ci:
                             self.transactions_table.update_confirmations(ci)
                         self.last_tx_with_confirmations_n = confirms
-                        continue
                     etxid = self.__etxid(t)
                     if etxid in utx:
                         utx[etxid][1] = (t,)
