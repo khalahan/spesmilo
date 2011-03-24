@@ -170,37 +170,45 @@ class SpesmiloSettings:
         if self.useInternalCore():
             return 'http://user:pass@localhost:8332'
         return _settings.value('core/uri', 'http://user:pass@localhost:8332')
-    
-    def _toBTC(self, n, addSign = False, wantTLA = False):
-        n = Decimal(n) / 100000000
-        if not n % Decimal('.1'):
+
+    def getNumberSystem(self):
+        return _settings.value('units/numsys', 'Decimal')
+
+    def getNumberSystemStrength(self):
+        return _settings.value('units/strength', 'Assume')
+
+    def _commafy(self, s, groupsize):
+        n = ''
+        if s[0] == '-':
+            n = s[0]
+            s = s[1:]
+        firstcomma = len(s) % groupsize or groupsize
+        n += s[:firstcomma]
+        r = s[firstcomma:]
+        segments = (n,) + tuple(r[i:i+groupsize] for i in range(0, len(r), groupsize))
+        return ','.join(segments)
+
+    def format_decimal(self, n, addSign = False, wantDelimiters = False, centsHack = False):
+        if not type(n) is Decimal:
+            n = Decimal(str(n))
+        if centsHack and not n % Decimal('.1'):
             n = n.quantize(Decimal('0.00'))
             s = str(n)
         else:
             s = str(int(n)) + str(abs(n % 1) + 1)[1:]
             if n < 0 and int(n) == 0:
                 s = '-' + s
+        if wantDelimiters:
+            s = self._commafy(s, 3)
         if addSign and n >= 0:
                 s = "+" + s
-        if wantTLA:
-            s += " BTC"
         return s
-    
-    def getNumberSystem(self):
-        return _settings.value('units/numsys', 'Decimal')
-    
-    def getNumberSystemStrength(self):
-        return _settings.value('units/strength', 'Assume')
-    
-    def _fromBTC(self, s):
-        s = float(s)
-        s = int(s * 100000000)
-        return s
-    
+
     _toTonalDict = dict(((57, u'\ue9d9'), (65, u'\ue9da'), (66, u'\ue9db'), (67, u'\ue9dc'), (68, u'\ue9dd'), (69, u'\ue9de'), (70, u'\ue9df'), (97, u'\ue9da'), (98, u'\ue9db'), (99, u'\ue9dc'), (100, u'\ue9dd'), (101, u'\ue9de'), (102, u'\ue9df')))
-    def _toTBC(self, n, addSign = False, wantTLA = False):
-        n /= float(0x10000)
+    def format_tonal(self, n, addSign = False, wantDelimiters = False):
         s = "%x" % n
+        if wantDelimiters:
+            s = self._commafy(s, 4)
         n = abs(n) % 1
         if n:
             s += '.'
@@ -211,24 +219,57 @@ class SpesmiloSettings:
         s = unicode(s).translate(self._toTonalDict)
         if addSign and n >= 0:
                 s = "+" + s
-        if wantTLA:
-            s += " TBC"
         return s
-    
+
     _fromTonalDict = dict(((0xe9d9, u'9'), (0xe9da, u'a'), (57, u'a'), (0xe9db, u'b'), (0xe9dc, u'c'), (0xe9dd, u'd'), (0xe9de, u'e'), (0xe9df, u'f')))
-    def _fromTBC(self, s):
+    def parse_tonal(self, s, mult = 1):
         s = unicode(s).translate(self._fromTonalDict)
+        s = ''.join(s.split(','))
         try:
             i = s.index('.')
+            s = s.rstrip('0')
         except ValueError:
             i = len(s)
         n = 0
         if i:
             n = int(s[:i], 16)
-        n *= 0x10000
+        n *= mult
+        if mult / (16 ** (len(s) - i - 1)) < 1:
+            mult = float(mult)
         for j in range(1, len(s) - i):
             d = int(s[i+j], 16)
-            n += (d * 0x10000) / (16 ** j)
+            n += (d * mult) / (16 ** j)
+        return n
+
+    def format_number(self, n, addSign = False, wantDelimiters = False):
+        ns = self.getNumberSystem()
+        if ns == 'Tonal':
+            ens = self.format_tonal
+        else:
+            ens = self.format_decimal
+        return ens(n, addSign=addSign, wantDelimiters=wantDelimiters)
+
+    def _toBTC(self, n, addSign = False, wantTLA = False, wantDelimiters = False):
+        n = Decimal(n) / 100000000
+        s = self.format_decimal(n, addSign=addSign, wantDelimiters=wantDelimiters, centsHack=True)
+        if wantTLA:
+            s += " BTC"
+        return s
+
+    def _fromBTC(self, s):
+        s = float(s)
+        s = int(s * 100000000)
+        return s
+
+    def _toTBC(self, n, addSign = False, wantTLA = False, wantDelimiters = False):
+        n /= float(0x10000)
+        s = self.format_tonal(n, addSign=addSign, wantDelimiters=wantDelimiters)
+        if wantTLA:
+            s += " TBC"
+        return s
+
+    def _fromTBC(self, s):
+        self.parse_tonal(s, mult=0x10000)
         return n
 
     def ChooseUnits(self, n, guess = None):
@@ -303,6 +344,7 @@ class SpesmiloSettings:
         app.installTranslator(self.translator)
 
 SpesmiloSettings = SpesmiloSettings()
+format_number = SpesmiloSettings.format_number
 humanAmount = SpesmiloSettings.humanAmount
 humanToAmount = SpesmiloSettings.humanToAmount
 

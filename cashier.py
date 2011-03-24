@@ -3,7 +3,7 @@ from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide.QtWebKit import *
 import send
-from settings import humanAmount
+from settings import humanAmount, format_number
 
 class FocusLineEdit(QLineEdit):
     def __init__(self, text):
@@ -87,12 +87,13 @@ class TransactionsTable(QTableWidget):
 
         row_disabled = False
         if confirms >= self.final_confirmation:
-            status = self.tr('Confirmed (%i)')%confirms
+            status = self.tr('Confirmed (%s)')
         elif confirms > 1:
-            status = self.tr('Processing... (%i)')%confirms
+            status = self.tr('Processing... (%s)')
         else:
-            status = self.tr('Validating... (%i)')%confirms
+            status = self.tr('Validating... (%s)')
             row_disabled = True
+        status %= (format_number(confirms),)
 
         status_item.setText(status)
 
