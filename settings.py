@@ -73,15 +73,20 @@ class SettingsTabLanguage(QWidget):
         nslay.addWidget(self.numsys)
         mainlay.addRow(self.tr('Number system:'), nslay)
         
+        self.hideTLA = QCheckBox(self.tr('Hide preferred unit name'))
+        mainlay.addRow(self.hideTLA)
+
         if enableApply is not None:
             self.lang.currentIndexChanged.connect(lambda: enableApply())
             self.numsys.currentIndexChanged.connect(lambda: enableApply())
             self.strength.currentIndexChanged.connect(lambda: enableApply())
+            self.hideTLA.stateChanged.connect(lambda: enableApply())
     
     def loadSettings(self, settings = None):
         self.lang.setCurrentIndex(self.lang.findData(settings.value('language/language', 'en_GB')))
         self.numsys.setCurrentIndex(self.numsys.findData(settings.value('units/numsys', 'Decimal')))
         self.strength.setCurrentIndex(self.strength.findData(settings.value('units/strength', 'Assume')))
+        self.hideTLA.setChecked(settings.value('units/hideTLA', 'True') != 'False')
     
     def checkSettings(self):
         pass
@@ -91,6 +96,7 @@ class SettingsTabLanguage(QWidget):
         SpesmiloSettings.loadTranslator()
         settings.setValue('units/numsys', self.numsys.itemData(self.numsys.currentIndex()))
         settings.setValue('units/strength', self.strength.itemData(self.strength.currentIndex()))
+        settings.setValue('units/hideTLA', repr(self.hideTLA.isChecked()))
 
 class SettingsDialog(QDialog):
     def __init__(self, parent):
@@ -177,6 +183,9 @@ class SpesmiloSettings:
     def getNumberSystemStrength(self):
         return _settings.value('units/strength', 'Assume')
 
+    def getHideUnitTLA(self):
+        return _settings.value('units/hideTLA', 'True') != 'False'
+
     def _commafy(self, s, groupsize):
         n = ''
         if s[0] == '-':
@@ -249,9 +258,11 @@ class SpesmiloSettings:
             ens = self.format_decimal
         return ens(n, addSign=addSign, wantDelimiters=wantDelimiters)
 
-    def _toBTC(self, n, addSign = False, wantTLA = False, wantDelimiters = False):
+    def _toBTC(self, n, addSign = False, wantTLA = None, wantDelimiters = False):
         n = Decimal(n) / 100000000
         s = self.format_decimal(n, addSign=addSign, wantDelimiters=wantDelimiters, centsHack=True)
+        if wantTLA is None:
+            wantTLA = not self.getHideUnitTLA()
         if wantTLA:
             s += " BTC"
         return s
@@ -261,9 +272,11 @@ class SpesmiloSettings:
         s = int(s * 100000000)
         return s
 
-    def _toTBC(self, n, addSign = False, wantTLA = False, wantDelimiters = False):
+    def _toTBC(self, n, addSign = False, wantTLA = None, wantDelimiters = False):
         n /= float(0x10000)
         s = self.format_tonal(n, addSign=addSign, wantDelimiters=wantDelimiters)
+        if wantTLA is None:
+            wantTLA = not self.getHideUnitTLA()
         if wantTLA:
             s += " TBC"
         return s
@@ -306,7 +319,7 @@ class SpesmiloSettings:
         if ens is None: ens = ns
         return ens
 
-    def humanAmount(self, n, addSign = False, wantTLA = False):
+    def humanAmount(self, n, addSign = False, wantTLA = None):
         ns = self.getNumberSystem()
         try:
             ens = self.ChooseUnits(n)
