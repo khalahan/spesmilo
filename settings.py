@@ -282,7 +282,7 @@ class SpesmiloSettings:
         return s
 
     def _fromTBC(self, s):
-        self.parse_tonal(s, mult=0x10000)
+        n = self.parse_tonal(s, mult=0x10000)
         return n
 
     def ChooseUnits(self, n, guess = None):
