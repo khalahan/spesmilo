@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="1.1" language="eo_EO">
+<!DOCTYPE TS>
+<TS version="2.0" language="en">
 <context>
     <name>Cashier</name>
     <message>
@@ -126,22 +127,22 @@
     <message>
         <location filename="send.py" line="42"/>
         <source>BTC</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="send.py" line="43"/>
         <source>TBC</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="send.py" line="164"/>
         <source>Error sending</source>
-        <translation type="unfinished"></translation>
+        <translation>Sendo eraris</translation>
     </message>
     <message>
         <location filename="send.py" line="164"/>
         <source>Your send failed: %s</source>
-        <translation type="unfinished"></translation>
+        <translation>Via sendo malsukcesis: %s</translation>
     </message>
 </context>
 <context>
@@ -149,22 +150,22 @@
     <message>
         <location filename="settings.py" line="147"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished">&amp;Nuligi</translation>
+        <translation>&amp;Nuligi</translation>
     </message>
     <message>
         <location filename="settings.py" line="137"/>
         <source>&amp;OK</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Jes</translation>
     </message>
     <message>
         <location filename="settings.py" line="142"/>
         <source>&amp;Apply</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Apliki</translation>
     </message>
     <message>
         <location filename="settings.py" line="160"/>
         <source>Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Prefereco</translation>
     </message>
 </context>
 <context>
@@ -172,12 +173,12 @@
     <message>
         <location filename="settings.py" line="31"/>
         <source>Use internal core</source>
-        <translation type="unfinished"></translation>
+        <translation>Uzu internilo</translation>
     </message>
     <message>
         <location filename="settings.py" line="36"/>
         <source>URI:</source>
-        <translation type="unfinished"></translation>
+        <translation>Ligilo:</translation>
     </message>
 </context>
 <context>
@@ -185,57 +186,57 @@
     <message>
         <location filename="settings.py" line="74"/>
         <source>American</source>
-        <translation type="unfinished"></translation>
+        <translation>Usona</translation>
     </message>
     <message>
         <location filename="settings.py" line="75"/>
         <source>English</source>
-        <translation type="unfinished"></translation>
+        <translation>Angla</translation>
     </message>
     <message>
         <location filename="settings.py" line="76"/>
         <source>Esperanto</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="settings.py" line="77"/>
         <source>Language:</source>
-        <translation type="unfinished"></translation>
+        <translation>Lingvo:</translation>
     </message>
     <message>
         <location filename="settings.py" line="81"/>
         <source>Assume</source>
-        <translation type="unfinished"></translation>
+        <translation>Kredi</translation>
     </message>
     <message>
         <location filename="settings.py" line="82"/>
         <source>Prefer</source>
-        <translation type="unfinished"></translation>
+        <translation>Preferi</translation>
     </message>
     <message>
         <location filename="settings.py" line="83"/>
         <source>Force</source>
-        <translation type="unfinished"></translation>
+        <translation>Ĉiam</translation>
     </message>
     <message>
         <location filename="settings.py" line="86"/>
         <source>Decimal</source>
-        <translation type="unfinished"></translation>
+        <translation>Dekuma</translation>
     </message>
     <message>
         <location filename="settings.py" line="87"/>
         <source>Tonal</source>
-        <translation type="unfinished"></translation>
+        <translation>Tonuma</translation>
     </message>
     <message>
         <location filename="settings.py" line="89"/>
         <source>Number system:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nombrosistemo:</translation>
     </message>
     <message>
         <location filename="settings.py" line="91"/>
         <source>Hide preferred unit name</source>
-        <translation type="unfinished"></translation>
+        <translation>Kaŝi preferatan unitnomon</translation>
     </message>
 </context>
 <context>
@@ -293,27 +294,27 @@
     <message>
         <location filename="cashier.py" line="151"/>
         <source>Generated</source>
-        <translation type="unfinished"></translation>
+        <translation>Generita</translation>
     </message>
     <message>
         <location filename="cashier.py" line="153"/>
         <source>Moved</source>
-        <translation type="unfinished"></translation>
+        <translation>Movita</translation>
     </message>
     <message>
         <location filename="cashier.py" line="106"/>
         <source>Confirmed (%s)</source>
-        <translation type="unfinished"></translation>
+        <translation>Konfirmita (%s)</translation>
     </message>
     <message>
         <location filename="cashier.py" line="108"/>
         <source>Processing... (%s)</source>
-        <translation type="unfinished"></translation>
+        <translation>Farata... (%s)</translation>
     </message>
     <message>
         <location filename="cashier.py" line="110"/>
         <source>Validating... (%s)</source>
-        <translation type="unfinished"></translation>
+        <translation>Kontrolata... (%s)</translation>
     </message>
 </context>
 <context>
