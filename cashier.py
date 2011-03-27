@@ -85,19 +85,16 @@ class TransactionsTable(QTableWidget):
 
     def update_confirmation(self, i, increment, adjustment = True):
         status_item = self.item(i, 0)
-        status = status_item.text()
-        m = re.search('(?<=\()\d+(?=\))', status)
-        if not m:
+        hastxt = len(status_item.text())
+        confirms = status_item.confirmations
+        if confirms is None:
             return
-        A = m.start()
-        B = m.end()
-        confirms = int(status[A:B])
         if adjustment:
             if confirms < self.final_confirmation:
                 return
             confirms = confirms + increment
         else:
-            if increment == confirms and A > 2:
+            if increment == confirms and hastxt:
                 return
             confirms = increment
 
@@ -112,6 +109,7 @@ class TransactionsTable(QTableWidget):
         status %= (format_number(confirms),)
 
         status_item.setText(status)
+        status_item.confirmations = confirms
 
         sf = self.disable_table_item if row_disabled else self.enable_table_item
         for j in range(0, 5):
@@ -119,7 +117,7 @@ class TransactionsTable(QTableWidget):
 
     def add_transaction_entry(self, transaction):
         self.insertRow(0)
-        confirms = 'N/A'
+        confirms = None
         if 'confirmations' in transaction:
             confirms = transaction['confirmations']
         unixtime = transaction['time']
@@ -130,7 +128,10 @@ class TransactionsTable(QTableWidget):
         balance = 'N/A'
         category = transaction['category']
 
-        status_item = TransactionItem('(0)' if confirms != 'N/A' else 'N/A')
+        status_item = TransactionItem('')
+        if confirms is None:
+            status_item.setText('N/A')
+        status_item.confirmations = confirms
         self.setItem(0, 0, status_item)
 
         date_formatter = QDateTime()
