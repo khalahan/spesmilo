@@ -371,6 +371,8 @@ class SpesmiloSettings:
         app = QCoreApplication.instance()
         app.installTranslator(self.translator)
 
+    debugMode = False
+
 SpesmiloSettings = SpesmiloSettings()
 format_number = SpesmiloSettings.format_number
 humanAmount = SpesmiloSettings.humanAmount

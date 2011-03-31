@@ -189,6 +189,19 @@ def _startup(rootwindow):
         os.system('bitcoind')
     rootwindow.start()
 
+def _RunCLI():
+    import code, threading
+    try:
+        raise None
+    except:
+        frame = sys.exc_info()[2].tb_frame.f_back
+    namespace = frame.f_globals.copy()
+    namespace.update(frame.f_locals)
+
+    def CLI():
+        code.interact(banner=None, local=namespace)
+    threading.Timer(0, CLI).start()
+
 if __name__ == '__main__':
     import sys
     app = QApplication(sys.argv)
@@ -201,4 +214,7 @@ if __name__ == '__main__':
         sd = SettingsDialog(rootwindow)
         sd.accepted.connect(lambda: _startup(rootwindow))
         sd.rejected.connect(lambda: qApp.quit())
+    if '--debug' in sys.argv:
+        SpesmiloSettings.debugMode = True
+        _RunCLI()
     sys.exit(app.exec_())

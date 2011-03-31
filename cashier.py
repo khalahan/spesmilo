@@ -270,6 +270,7 @@ class Cashier(QDialog):
         return etxid
 
     def refresh_transactions(self):
+        debuglog = []
         fetchtx = self.txload_initial
         utx = {}
         if not self.last_tx is None:
@@ -278,12 +279,15 @@ class Cashier(QDialog):
             for etxid, status_item in self.unconfirmed_tx:
                 row = self.transactions_table.row(status_item)
                 utx[etxid] = [row, None]
+                debuglog += ["Present unconfirmed tx %s at row %d" % (etxid, row)]
                 # Allow up to 5 wasted refetches in between unconfirmed refetches
                 if row <= fetchtx + self.txload_waste:
                     fetchtx = row + 1
             fetchtx += self.txload_poll
         while True:
+            debuglog += ["Fetching %d transactions" % (fetchtx,)]
             transactions = self.core.transactions('*', fetchtx)
+            debuglog += [{'raw_txlist': transactions}]
 
             # Sort through fetched transactions, updating confirmation counts
             ttf = len(transactions)
@@ -300,8 +304,10 @@ class Cashier(QDialog):
                     confirms = t['confirmations']
                     if nltwc is None and confirms >= self.transactions_table.final_confirmation:
                         nltwc = t
+                        debuglog += ["New last_tx_with_confirmations = %s" % (txid,)]
                     if txid == self.last_tx_with_confirmations:
                         ci = confirms - self.last_tx_with_confirmations_n
+                        debuglog += ["Found last_tx_with_confirmations (%s) with %d confirms (+%d)" % (txid, confirms, ci)]
                         if ci:
                             self.transactions_table.update_confirmations(ci)
                         self.last_tx_with_confirmations_n = confirms
@@ -311,6 +317,7 @@ class Cashier(QDialog):
                 if nomore:
                     continue
                 if txid == self.last_tx:
+                    debuglog += ["Found last recorded tx (%s)" % (txid,)]
                     nomore = True
                     if i >= self.txload_poll:
                         self.txload_poll = i + 1
@@ -329,6 +336,7 @@ class Cashier(QDialog):
 
         if transactions:
             transactions.reverse()
+            debuglog += [{'new_txlist': transactions}]
 
             # Add any new transactions
             for t in transactions:
@@ -337,6 +345,7 @@ class Cashier(QDialog):
                 if t['confirmations'] < self.transactions_table.final_confirmation:
                     etxid = self.__etxid(t)
                     self.unconfirmed_tx.insert(0, (etxid, status_item) )
+                    debuglog += ["New unconfirmed tx: %s" % (etxid,)]
             self.last_tx = transactions[-1]['txid']
 
         # Finally, fetch individual tx info for any old unconfirmed tx
@@ -345,11 +354,13 @@ class Cashier(QDialog):
             status_item, transactions = data
             txid = etxid[:etxid.index('/')]
             if transactions is None:
+                debuglog += ["Specially fetching unconfirmed tx: %s" % (etxid,)]
                 transactions = self.core.get_transaction(txid)
             for t in transactions:
                 etxid = self.__etxid(t)
                 if etxid in utx:
                     confirms = t['confirmations']
+                    debuglog += ["Tx %s has %d confirms" % (etxid, confirms)]
                     status_item = utx[etxid][0]
                     self.transactions_table.update_confirmation(status_item, confirms, adjustment=False)
                     del utx[etxid]
@@ -358,6 +369,8 @@ class Cashier(QDialog):
                             if self.unconfirmed_tx[i][0] == etxid:
                                 self.unconfirmed_tx[i:i+1] = ()
                                 break
+
+        self._refresh_transactions_debug = debuglog
 
     def refresh_balance(self):
         bltext = self.tr('Balance: %s') % (humanAmount(self.core.balance(), wantTLA=True),)
