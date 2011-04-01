@@ -19,7 +19,7 @@ from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide.QtWebKit import *
 import send
-from settings import humanAmount, format_number
+from settings import SpesmiloSettings, humanAmount, format_number
 
 class FocusLineEdit(QLineEdit):
     def __init__(self, text):
@@ -242,6 +242,7 @@ class Cashier(QDialog):
         self.txload_initial = 0x1000
         self.txload_poll = 8
         self.txload_waste = 8
+        self._refresh_transactions_debug = []
 
         refresh_info_timer = QTimer(self)
         refresh_info_timer.timeout.connect(self.refresh_info)
@@ -372,7 +373,8 @@ class Cashier(QDialog):
                                 self.unconfirmed_tx[i:i+1] = ()
                                 break
 
-        self._refresh_transactions_debug = debuglog
+        if SpesmiloSettings.debugMode:
+            self._refresh_transactions_debug += [debuglog]
 
     def refresh_balance(self):
         bltext = self.tr('Balance: %s') % (humanAmount(self.core.balance(), wantTLA=True),)
