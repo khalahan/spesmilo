@@ -36,7 +36,7 @@ class CoreInterface:
 
     def _fromAmount(self, n):
         if self.rpcversion == 0:
-            return int(n * 100000000)
+            return int(round(n * 100000000))
         return int(n)
 
     def transactions(self, *args):
