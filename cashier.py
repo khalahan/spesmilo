@@ -278,7 +278,7 @@ class Cashier(QDialog):
             fetchtx = 0
             for etxid, status_item in self.unconfirmed_tx:
                 row = self.transactions_table.row(status_item)
-                utx[etxid] = [row, None]
+                utx[etxid] = [status_item, None]
                 debuglog += ["Present unconfirmed tx %s at row %d" % (etxid, row)]
                 # Allow up to 5 wasted refetches in between unconfirmed refetches
                 if row <= fetchtx + self.txload_waste:
@@ -362,9 +362,11 @@ class Cashier(QDialog):
                     confirms = t['confirmations']
                     debuglog += ["Tx %s has %d confirms" % (etxid, confirms)]
                     status_item = utx[etxid][0]
-                    self.transactions_table.update_confirmation(status_item, confirms, adjustment=False)
+                    # NOTE: the row may have changed since the start of the function, so don't try to cache it from above
+                    row = self.transactions_table.row(status_item)
+                    self.transactions_table.update_confirmation(row, confirms, adjustment=False)
                     del utx[etxid]
-                    if t['confirmations'] >= self.transactions_table.final_confirmation:
+                    if confirms >= self.transactions_table.final_confirmation:
                         for i in xrange(len(self.unconfirmed_tx)):
                             if self.unconfirmed_tx[i][0] == etxid:
                                 self.unconfirmed_tx[i:i+1] = ()
