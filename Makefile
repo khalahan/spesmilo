@@ -24,7 +24,7 @@ lang: $(qm)
 
 pyo: $(pyo)
 
-$(APP): pyo lang
+$(APP): $(pyo) $(qm)
 	make exescript exescript="$@" LIBEXECDIR=.
 	chmod +x $@
 
@@ -38,7 +38,7 @@ exescript:
 clean:
 	rm -vf $(qm) $(pyo) $(APP) $(exescript)
 
-install: lang pyo exescript
+install: $(qm) $(pyo) exescript
 	$(INSTALL) -d "$(DESTDIR)/$(LIBEXECDIR)"
 	for pyo in $(pyo); do \
 		$(INSTALL) -D "$$pyo" "$(DESTDIR)/$(LIBEXECDIR)/$$pyo"; \
