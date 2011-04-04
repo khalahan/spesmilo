@@ -120,6 +120,7 @@ class RootWindow(QMainWindow):
 
     def __init__(self):
         super(RootWindow, self).__init__()
+        self.app = qApp
         
         icon = lambda s: QIcon('./icons/' + s)
         self.bitcoin_icon = icon('bitcoin32.xpm')

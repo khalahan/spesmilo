@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import re
+from time import time
 from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide.QtWebKit import *
@@ -296,7 +297,14 @@ class Cashier(QDialog):
             otl = []
             nltwc = None
             nomore = False
+            petime = time()
+            if self.last_tx:
+                petime += .001
             for i in xrange(ttf):
+                nowtime = time()
+                if petime < nowtime and self.parent():
+                    self.parent().app.processEvents()
+                    petime = nowtime + .001
                 t = transactions[i]
                 if 'txid' not in t:
                     continue
