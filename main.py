@@ -218,7 +218,7 @@ if __name__ == '__main__':
     #                help='Use an alternative config')
     argp.add_option('--debug', dest='debug', action='store_true', default=False,
                     help='Opens an interactive Python prompt, and enables infinite in-RAM logging')
-    argp.add_option('--icon', dest='icon', nargs=1, default='bitcoin',
+    argp.add_option('--icon', dest='icon', nargs=1, default=None,
                     help='Use this window icon')
     argp.add_option('--send', dest='send', action='store_true', default=False,
                     help='Opens a dialog to send funds')
