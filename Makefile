@@ -14,7 +14,7 @@ qm = $(patsubst %.ts,%.qm,$(wildcard i18n/*.ts))
 pyo = $(patsubst %.py,%.pyo,$(wildcard *.py jsonrpc/*.py))
 exescript = $(APP).exescript
 
-all: $(APP)
+all: $(APP) $(qm) $(pyo)
 
 %.qm: %.ts
 	lrelease $<
@@ -26,7 +26,7 @@ lang: $(qm)
 
 pyo: $(pyo)
 
-$(APP): $(pyo) $(qm)
+$(APP):
 	make exescript exescript="$@" LIBEXECDIR=.
 	chmod +x $@
 
