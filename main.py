@@ -226,7 +226,11 @@ if __name__ == '__main__':
     argp.add_option('--send', dest='send', action='store_true', default=False,
                     help='Opens a dialog to send funds')
 
-    (options, args) = argp.parse_args(app.arguments())
+    args = app.arguments()
+    # Workaround KDE bug
+    if '-icon' in args:
+        args[args.index('-icon')] = '--icon'
+    (options, args) = argp.parse_args(args)
     args[0:1] = ()
 
     if args or options.send:
