@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Spesmilo
+GenericName=Bitcoin Client
+Comment=A PySide Bitcoin user interface
+Icon=bitcoin
+Exec=spesmilo %i --caption "%c" %u
+Terminal=false
+Categories=Qt;Office;Network;Finance;P2P;
