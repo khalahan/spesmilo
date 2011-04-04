@@ -1,3 +1,4 @@
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 # Spesmilo -- Python Bitcoin user interface
 # Copyright © 2011 Luke Dashjr
