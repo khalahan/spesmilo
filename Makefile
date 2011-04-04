@@ -31,7 +31,7 @@ $(APP): pyo lang
 exescript:
 	{ \
 		echo '#!'"`which sh`"; \
-		echo "exec `which python` -O $(LIBEXECDIR)/main.pyo"; \
+		echo "exec \"`which python`\" -O \"$(LIBEXECDIR)/main.pyo\" \"\$$@\""; \
 	} \
 	>"$(exescript)"
 
