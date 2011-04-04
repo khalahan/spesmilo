@@ -378,6 +378,12 @@ format_number = SpesmiloSettings.format_number
 humanAmount = SpesmiloSettings.humanAmount
 humanToAmount = SpesmiloSettings.humanToAmount
 
+import urllib
+class _NotFancyURLopener(urllib.FancyURLopener):
+    def prompt_user_passwd(self, host, realm):
+        raise NotImplementedError("Wrong or missing username/password")
+urllib._urlopener = _NotFancyURLopener()
+
 if __name__ == '__main__':
     import sys
     app = QApplication(sys.argv)
