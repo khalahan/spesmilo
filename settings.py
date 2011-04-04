@@ -22,6 +22,21 @@ from PySide.QtGui import *
 
 _settings = QSettings('BitCoin', 'Spesmilo')
 
+def icon(*ss):
+    if not ss:
+        if not hasattr(icon, '_default'):
+            icon._default = icon(*icon._defaultSearch)
+        return icon._default
+    for s in ss:
+        if not s:
+            continue
+        if '/' in s:
+            return QIcon(s)
+        if QIcon.hasThemeIcon(s):
+            return QIcon.fromTheme(s)
+    return QIcon()
+icon._defaultSearch = ('spesmilo', 'bitcoin', 'icons/bitcoin32.xpm')
+
 class SettingsTabCore(QWidget):
     def __init__(self, parent, enableApply = None):
         super(SettingsTabCore, self).__init__(parent)
@@ -155,8 +170,7 @@ class SettingsDialog(QDialog):
         
         self.accepted.connect(lambda: self.saveSettings())
         
-        if parent is not None:
-            self.setWindowIcon(parent.bitcoin_icon)
+        self.setWindowIcon(icon())
         self.setWindowTitle(self.tr('Settings'))
         self.show()
     
@@ -377,21 +391,6 @@ SpesmiloSettings = SpesmiloSettings()
 format_number = SpesmiloSettings.format_number
 humanAmount = SpesmiloSettings.humanAmount
 humanToAmount = SpesmiloSettings.humanToAmount
-
-def icon(*ss):
-    if not ss:
-        if not hasattr(icon, '_default'):
-            icon._default = icon(*icon._defaultSearch)
-        return icon._default
-    for s in ss:
-        if not s:
-            continue
-        if '/' in s:
-            return QIcon(s)
-        if QIcon.hasThemeIcon(s):
-            return QIcon.fromTheme(s)
-    return QIcon()
-icon._defaultSearch = ('spesmilo', 'bitcoin', 'icons/bitcoin32.xpm')
 
 if __name__ == '__main__':
     import sys
