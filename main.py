@@ -126,7 +126,7 @@ class RootWindow(QMainWindow):
         
         self.state = self.CLIENT_NONE
     
-    def start(self):
+    def start(self, options, args):
         self.uri = SpesmiloSettings.getEffectiveURI()
         self.core = core_interface.CoreInterface(self.uri)
         self.tray = TrayIcon(self.core, self)
@@ -183,11 +183,11 @@ class RootWindow(QMainWindow):
         finally:
             qApp.quit()
 
-def _startup(rootwindow):
+def _startup(rootwindow, options, args):
     if SpesmiloSettings.useInternalCore():
         import os
         os.system('bitcoind')
-    rootwindow.start()
+    rootwindow.start(options, args)
 
 def _RunCLI():
     import code, threading
@@ -203,18 +203,41 @@ def _RunCLI():
     threading.Timer(0, CLI).start()
 
 if __name__ == '__main__':
+    import optparse
+    import os
     import sys
     app = QApplication(sys.argv)
     SpesmiloSettings.loadTranslator()
-    app.setQuitOnLastWindowClosed(False)
-    rootwindow = RootWindow()
+
+    argp = optparse.OptionParser(usage='Usage: %prog [options] [URI]')
+    #argp.add_option('URI', nargs='?', help='a bitcoin: URI to open a send dialog to')
+    #argp.add_option('--cashier', dest='cashier', action='store_true', default=False,
+    #                help='Opens a view of your transactions')
+    #argp.add_option('--config', dest='config', nargs=1,
+    #                help='Use an alternative config')
+    argp.add_option('--debug', dest='debug', action='store_true', default=False,
+                    help='Opens an interactive Python prompt, and enables infinite in-RAM logging')
+    #argp.add_option('--icon', dest='icon', nargs=1, default='bitcoin',
+    #                help='Use this window icon')
+    argp.add_option('--send', dest='send', action='store_true', default=False,
+                    help='Opens a dialog to send funds')
+
+    (options, args) = argp.parse_args(app.arguments())
+    args[0:1] = ()
+
+    if args or options.send:
+        rootwindow = send.SendDialog(autostart=False)
+    else:
+        app.setQuitOnLastWindowClosed(False)
+        rootwindow = RootWindow()
+
     if SpesmiloSettings.isConfigured():
-        _startup(rootwindow)
+        _startup(rootwindow, options, args)
     else:
         sd = SettingsDialog(rootwindow)
-        sd.accepted.connect(lambda: _startup(rootwindow))
+        sd.accepted.connect(lambda: _startup(rootwindow, options, args))
         sd.rejected.connect(lambda: qApp.quit())
-    if '--debug' in sys.argv:
+    if options.debug:
         SpesmiloSettings.debugMode = True
         _RunCLI()
     sys.exit(app.exec_())

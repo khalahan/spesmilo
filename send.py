@@ -22,7 +22,7 @@ from PySide.QtWebKit import *
 from settings import humanAmount, humanToAmount, SpesmiloSettings
 
 class SendDialog(QDialog):
-    def __init__(self, core, parent, uri = None):
+    def __init__(self, core = None, parent = None, uri = None, autostart = True):
         super(SendDialog, self).__init__(parent)
         self.core = core
         
@@ -74,6 +74,17 @@ class SendDialog(QDialog):
 
         if not uri is None:
             self.load_uri(uri)
+
+        if autostart:
+            self.start()
+
+    def start(self, options = None, args = None):
+        if not self.core:
+            import core_interface
+            uri = SpesmiloSettings.getEffectiveURI()
+            self.core = core_interface.CoreInterface(uri)
+        if args:
+            self.load_uri(args[0])
 
         self.show()
         self.destaddy.setFocus()
@@ -177,7 +188,6 @@ if __name__ == '__main__':
     os.system('bitcoind')
     app = QApplication(sys.argv)
     SpesmiloSettings.loadTranslator()
-    uri = SpesmiloSettings.getEffectiveURI()
-    core = core_interface.CoreInterface(uri)
-    send = SendDialog(core, None, sys.argv[1] if len(sys.argv) > 1 else None)
+    send = SendDialog(None, None, sys.argv[1] if len(sys.argv) > 1 else None, autostart=False)
+    send.start()
     sys.exit(app.exec_())
