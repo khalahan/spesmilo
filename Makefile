@@ -10,8 +10,9 @@ PYTHON_O := $(PYTHON) -OO -m py_compile
 
 qm = $(patsubst %.ts,%.qm,$(wildcard i18n/*.ts))
 pyo = $(patsubst %.py,%.pyo,$(wildcard *.py jsonrpc/*.py))
+exescript = $(APP).exescript
 
-all: lang pyo
+all: $(APP)
 
 %.qm: %.ts
 	lrelease $<
@@ -23,15 +24,19 @@ lang: $(qm)
 
 pyo: $(pyo)
 
+$(APP): pyo lang
+	make exescript exescript="$@" LIBEXECDIR=.
+	chmod +x $@
+
 exescript:
 	{ \
 		echo '#!'"`which sh`"; \
 		echo "exec `which python` -O $(LIBEXECDIR)/main.pyo"; \
 	} \
-	>"$(APP).exescript"
+	>"$(exescript)"
 
 clean:
-	rm -vf $(qm) $(pyo)
+	rm -vf $(qm) $(pyo) $(APP) $(exescript)
 
 install: lang pyo exescript
 	$(INSTALL) -d "$(DESTDIR)/$(LIBEXECDIR)"
@@ -39,6 +44,6 @@ install: lang pyo exescript
 		$(INSTALL) -D "$$pyo" "$(DESTDIR)/$(LIBEXECDIR)/$$pyo"; \
 	done
 	$(INSTALL) -d "$(DESTDIR)/$(BINDIR)"
-	$(INSTALL) --mode=0755 "$(APP).exescript" "$(DESTDIR)/$(BINDIR)/$(APP)"
+	$(INSTALL) --mode=0755 "$(exescript)" "$(DESTDIR)/$(BINDIR)/$(APP)"
 
 .PHONY: lang clean install pyo

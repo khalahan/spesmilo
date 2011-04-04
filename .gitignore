@@ -2,3 +2,5 @@
 *.pyo
 *~
 i18n/*.qm
+spesmilo
+*.exescript
