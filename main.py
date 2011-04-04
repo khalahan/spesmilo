@@ -127,6 +127,7 @@ class RootWindow(QMainWindow):
     def start(self, options, args):
         icon._default = icon(options.icon, *icon._defaultSearch)
         self.bitcoin_icon = icon()
+        self.caption = options.caption
 
         self.uri = SpesmiloSettings.getEffectiveURI()
         self.core = core_interface.CoreInterface(self.uri)
@@ -212,6 +213,8 @@ if __name__ == '__main__':
 
     argp = optparse.OptionParser(usage='Usage: %prog [options] [URI]')
     #argp.add_option('URI', nargs='?', help='a bitcoin: URI to open a send dialog to')
+    argp.add_option('--caption', dest='caption', nargs=1, default=None,
+                    help='Use this caption for the cashier window')
     #argp.add_option('--cashier', dest='cashier', action='store_true', default=False,
     #                help='Opens a view of your transactions')
     #argp.add_option('--config', dest='config', nargs=1,

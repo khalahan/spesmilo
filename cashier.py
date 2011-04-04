@@ -233,9 +233,12 @@ class Cashier(QDialog):
         #                      Qt.ScrollBarAlwaysOff)
         #main_layout.addWidget(webview)
 
-        self.setWindowTitle(self.tr('Spesmilo'))
+        caption = self.tr('Spesmilo')
         if parent is not None:
             self.setWindowIcon(parent.bitcoin_icon)
+            if parent.caption:
+                caption = parent.caption
+        self.setWindowTitle(caption)
         self.setAttribute(Qt.WA_DeleteOnClose, False)
 
         self.transactions_table.final_confirmation = 6
