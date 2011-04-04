@@ -378,6 +378,21 @@ format_number = SpesmiloSettings.format_number
 humanAmount = SpesmiloSettings.humanAmount
 humanToAmount = SpesmiloSettings.humanToAmount
 
+def icon(*ss):
+    if not ss:
+        if not hasattr(icon, '_default'):
+            icon._default = icon(*icon._defaultSearch)
+        return icon._default
+    for s in ss:
+        if not s:
+            continue
+        if '/' in s:
+            return QIcon(s)
+        if QIcon.hasThemeIcon(s):
+            return QIcon.fromTheme(s)
+    return QIcon()
+icon._defaultSearch = ('spesmilo', 'bitcoin', 'icons/bitcoin32.xpm')
+
 if __name__ == '__main__':
     import sys
     app = QApplication(sys.argv)

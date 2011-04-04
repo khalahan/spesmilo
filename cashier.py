@@ -19,7 +19,7 @@ from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide.QtWebKit import *
 import send
-from settings import SpesmiloSettings, humanAmount, format_number
+from settings import SpesmiloSettings, humanAmount, format_number, icon
 
 class FocusLineEdit(QLineEdit):
     def __init__(self, text):
@@ -381,16 +381,14 @@ class Cashier(QDialog):
         self.balance_label.setText(bltext)
 
     def create_actions(self):
-        icon = lambda s: QIcon('./icons/' + s)
-
-        self.send_act = QAction(icon('forward.png'), self.tr('Send'),
+        self.send_act = QAction(icon('go-next'), self.tr('Send'),
             self, toolTip=self.tr('Send bitcoins to another person'),
             triggered=self.new_send_dialog)
-        self.newaddy_act = QAction(icon('document_new.png'),
+        self.newaddy_act = QAction(icon('document-new'),
             self.tr('New address'), self,
             toolTip=self.tr('Create new address for accepting bitcoins'),
             triggered=self.new_address)
-        self.copyaddy_act = QAction(icon('klipper.png'),
+        self.copyaddy_act = QAction(icon('copy-bitcoin-address', 'klipper', 'tool_clipboard', 'edit-copy'),
             self.tr('Copy address'),
             self, toolTip=self.tr('Copy address to clipboard'),
             triggered=self.copy_address)

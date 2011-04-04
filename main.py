@@ -21,7 +21,7 @@ from PySide.QtWebKit import *
 import core_interface
 import cashier
 import send
-from settings import SpesmiloSettings, SettingsDialog
+from settings import SpesmiloSettings, SettingsDialog, icon
 
 class ConnectingDialog(QDialog):
     def __init__(self, parent):
@@ -122,12 +122,12 @@ class RootWindow(QMainWindow):
     def __init__(self):
         super(RootWindow, self).__init__()
         
-        icon = lambda s: QIcon('./icons/' + s)
-        self.bitcoin_icon = icon('bitcoin32.xpm')
-        
         self.state = self.CLIENT_NONE
     
     def start(self, options, args):
+        icon._default = icon(options.icon, *icon._defaultSearch)
+        self.bitcoin_icon = icon()
+
         self.uri = SpesmiloSettings.getEffectiveURI()
         self.core = core_interface.CoreInterface(self.uri)
         self.tray = TrayIcon(self.core, self)
@@ -218,8 +218,8 @@ if __name__ == '__main__':
     #                help='Use an alternative config')
     argp.add_option('--debug', dest='debug', action='store_true', default=False,
                     help='Opens an interactive Python prompt, and enables infinite in-RAM logging')
-    #argp.add_option('--icon', dest='icon', nargs=1, default='bitcoin',
-    #                help='Use this window icon')
+    argp.add_option('--icon', dest='icon', nargs=1, default='bitcoin',
+                    help='Use this window icon')
     argp.add_option('--send', dest='send', action='store_true', default=False,
                     help='Opens a dialog to send funds')
 

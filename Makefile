@@ -2,6 +2,8 @@ APP := spesmilo
 PREFIX := /usr/local/
 BINDIR := $(PREFIX)/bin
 LIBEXECDIR := $(PREFIX)/libexec/$(APP)
+DATADIR := $(PREFIX)/share
+ICONDIR := $(DATADIR)/icons/hicolor
 DESTDIR := 
 
 INSTALL := install -v
@@ -43,6 +45,8 @@ install: $(qm) $(pyo) exescript
 	for pyo in $(pyo); do \
 		$(INSTALL) -D "$$pyo" "$(DESTDIR)/$(LIBEXECDIR)/$$pyo"; \
 	done
+	$(INSTALL) -d "$(DESTDIR)$(ICONDIR)/32x32/apps"
+	$(INSTALL) "icons/bitcoin32.xpm" "$(DESTDIR)$(ICONDIR)/32x32/apps/bitcoin.xpm"
 	$(INSTALL) -d "$(DESTDIR)/$(BINDIR)"
 	$(INSTALL) --mode=0755 "$(exescript)" "$(DESTDIR)/$(BINDIR)/$(APP)"
 
