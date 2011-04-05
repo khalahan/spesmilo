@@ -56,7 +56,7 @@ class TransactionItem(QTableWidgetItem):
 
 class TransactionsTable(QTableWidget):
     # These are the proportions for the various columns
-    hedprops = (130, 150, 400, 100, 100)
+    hedprops = (0x80, 0x70, 0x150, 0x68, 0)
 
     def __init__(self):
         super(TransactionsTable, self).__init__()
@@ -70,6 +70,7 @@ class TransactionsTable(QTableWidget):
         self.setHorizontalHeaderLabels(hedlabels)
         for i, sz in enumerate(self.hedprops):
             self.horizontalHeader().resizeSection(i, sz)
+        self.hideColumn(4)
 
         self.setSelectionBehavior(self.SelectRows)
         self.setSelectionMode(self.NoSelection)
@@ -282,7 +283,7 @@ class Cashier(QDialog):
         #self.transactions_table.add_transaction_entry({'confirmations': 3, 'time': 1223332, 'address': 'fake', 'amount': 111, 'category': 'send'})
         #self.transactions_table.add_transaction_entry({'confirmations': 0, 'time': 1223332, 'address': 'fake', 'amount': 111, 'category': 'send'})
 
-        self.resize(900, 300)
+        self.resize(640, 420)
 
     def refresh_info(self):
         self.refresh_balance()
