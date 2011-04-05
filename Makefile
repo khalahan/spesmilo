@@ -42,12 +42,14 @@ $(APP):
 exescript:
 	{ \
 		echo '#!'"`which sh`"; \
+		echo "PYTHONPATH=\"\$${PYTHONPATH}:$(LIBEXECDIR)/lib\" \\"; \
 		echo "exec \"`which python`\" -O \"$(LIBEXECDIR)/main.pyo\" \"\$$@\""; \
 	} \
 	>"$(exescript)"
 
 local:
-	svn co http://svn.json-rpc.org/trunk/python-jsonrpc/jsonrpc
+	mkdir -p lib
+	svn co http://svn.json-rpc.org/trunk/python-jsonrpc/jsonrpc lib/jsonrpc
 
 clean:
 	rm -vf $(qm) $(pyo) $(APP) $(exescript)
