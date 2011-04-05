@@ -23,6 +23,12 @@ import cashier
 import send
 from settings import SpesmiloSettings, SettingsDialog, icon
 
+def _startup(rootwindow, *args, **kwargs):
+    if SpesmiloSettings.useInternalCore():
+        import os
+        os.system('bitcoind')
+    rootwindow.start()
+
 class ConnectingDialog(QDialog):
     def __init__(self, parent):
         super(ConnectingDialog, self).__init__(parent)
@@ -35,6 +41,10 @@ class ConnectingDialog(QDialog):
         
         button_layout = QHBoxLayout()
         button_layout.addStretch()
+        cfgbtn = QPushButton('&Configure')
+        cfgbtn.clicked.connect(self.config)
+        self.cfgbtn = cfgbtn
+        button_layout.addWidget(cfgbtn)
         abortbtn = QPushButton('&Abort')
         abortbtn.clicked.connect(self.stop)
         button_layout.addWidget(abortbtn)
@@ -45,6 +55,11 @@ class ConnectingDialog(QDialog):
         self.setWindowTitle(self.tr('Connecting...'))
         self.setAttribute(Qt.WA_DeleteOnClose, False)
         self.show()
+
+    def config(self):
+        self.hide()
+        rootwindow = self.parent()
+        rootwindow.config()
 
     def stop(self):
         self.hide()
@@ -89,6 +104,8 @@ class TrayIcon(QSystemTrayIcon):
         self.current_window = ConnectingDialog(self.parent())
 
     def create_cashier(self):
+        if hasattr(self.current_window, 'cfgbtn'):
+            self.current_window.cfgbtn.setDisabled(True)
         self.cash_act.setDisabled(False)
         self.send_act.setDisabled(False)
         self.delete_window()
@@ -125,19 +142,28 @@ class RootWindow(QMainWindow):
         
         self.state = self.CLIENT_NONE
     
-    def start(self, options, args):
+    def setup(self, options, args):
         icon._default = icon(options.icon, *icon._defaultSearch)
         self.bitcoin_icon = icon()
         self.caption = options.caption
 
+    def start(self):
+        self.state = self.CLIENT_NONE
         self.uri = SpesmiloSettings.getEffectiveURI()
         self.core = core_interface.CoreInterface(self.uri)
         self.tray = TrayIcon(self.core, self)
 
         refresh_state_timer = QTimer(self)
+        self.refresh_state_timer = refresh_state_timer
         refresh_state_timer.timeout.connect(self.refresh_state)
         refresh_state_timer.start(1000)
         self.refresh_state()
+
+    def config(self):
+        self.stop(doQuit=False)
+        sd = SettingsDialog(self)
+        sd.accepted.connect(lambda: _startup(self))
+        sd.rejected.connect(lambda: qApp.quit())
 
     def refresh_state(self):
         is_init = False
@@ -157,8 +183,7 @@ class RootWindow(QMainWindow):
                                     self.tr('Error connecting'),
                                     self.tr(str(e)))
                 error.exec_()
-                qApp.quit()
-                raise
+                self.config()
         if is_init:
             # some voodoo here checking whether we have blocks
             self.state = self.CLIENT_RUNNING
@@ -168,7 +193,8 @@ class RootWindow(QMainWindow):
         super(RootWindow, self).closeEvent(event)
         self.stop()
 
-    def stop(self):
+    def stop(self, doQuit = True):
+        self.refresh_state_timer.stop()
         try:
             if SpesmiloSettings.useInternalCore():
                 # Keep looping until connected so we can issue the stop command
@@ -185,13 +211,9 @@ class RootWindow(QMainWindow):
         except:
             raise
         finally:
-            qApp.quit()
-
-def _startup(rootwindow, options, args):
-    if SpesmiloSettings.useInternalCore():
-        import os
-        os.system('bitcoind')
-    rootwindow.start(options, args)
+            self.core = None
+            if doQuit:
+                qApp.quit()
 
 def _RunCLI():
     import code, threading
@@ -240,6 +262,7 @@ if __name__ == '__main__':
     else:
         app.setQuitOnLastWindowClosed(False)
         rootwindow = RootWindow()
+        rootwindow.setup(options, args)
 
     if SpesmiloSettings.isConfigured():
         _startup(rootwindow, options, args)

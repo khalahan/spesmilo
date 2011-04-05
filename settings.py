@@ -275,7 +275,7 @@ class SettingsDialog(QDialog):
         self.applybtn.setEnabled(True)
 
     def requireRestart(self):
-        if not hasattr(self.parent(), 'core'):
+        if not (hasattr(self.parent(), 'core') and self.parent().core):
             return
         msg = QMessageBox(QMessageBox.Information,
                           self.tr('Restart required'),
