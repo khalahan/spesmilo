@@ -46,6 +46,9 @@ exescript:
 	} \
 	>"$(exescript)"
 
+local:
+	svn co http://svn.json-rpc.org/trunk/python-jsonrpc/jsonrpc
+
 clean:
 	rm -vf $(qm) $(pyo) $(APP) $(exescript)
 
@@ -65,4 +68,4 @@ install: $(qm) $(pyo) exescript $(icon)
 		$(INSTALL) "$(APP).protocol" "$(DESTDIR)/$(KDESERVICEDIR)/"; \
 	fi
 
-.PHONY: lang clean install pyo
+.PHONY: lang clean install pyo local

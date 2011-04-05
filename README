@@ -18,6 +18,10 @@ sudo add-apt-repository ppa:pyside
 sudo apt-get update
 sudo apt-get install python-pyside
 
+# === Python JSONRPC ===
+
+# if your distro doesn't have this, use 'make local'
+
 # == Run Spesmilo ==
 
 python main.py
