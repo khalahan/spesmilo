@@ -20,7 +20,7 @@ import re
 from PySide.QtCore import *
 from PySide.QtGui import *
 
-_settings = QSettings('BitCoin', 'Spesmilo')
+_settings = QSettings('Bitcoin', 'Spesmilo')
 
 def icon(*ss):
     if not ss:
