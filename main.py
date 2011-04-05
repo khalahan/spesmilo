@@ -239,20 +239,20 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     SpesmiloSettings.loadTranslator()
 
-    argp = optparse.OptionParser(usage='Usage: %prog [options] [URI]')
-    #argp.add_option('URI', nargs='?', help='a bitcoin: URI to open a send dialog to')
+    argp = optparse.OptionParser(usage=app.tr('Usage: %prog [options] [URI]'))
+    #argp.add_option('URI', nargs='?', help=app.tr('a bitcoin: URI to open a send dialog to'))
     argp.add_option('--caption', dest='caption', nargs=1, default=None,
-                    help='Use this caption for the cashier window')
+                    help=app.tr('Use this caption for the cashier window'))
     #argp.add_option('--cashier', dest='cashier', action='store_true', default=False,
-    #                help='Opens a view of your transactions')
+    #                help=app.tr('Opens a view of your transactions'))
     #argp.add_option('--config', dest='config', nargs=1,
-    #                help='Use an alternative config')
+    #                help=app.tr('Use an alternative config'))
     argp.add_option('--debug', dest='debug', action='store_true', default=False,
-                    help='Opens an interactive Python prompt, and enables infinite in-RAM logging')
+                    help=app.tr('Opens an interactive Python prompt, and enables infinite in-RAM logging'))
     argp.add_option('--icon', dest='icon', nargs=1, default=None,
-                    help='Use this window icon')
+                    help=app.tr('Use this window icon'))
     argp.add_option('--send', dest='send', action='store_true', default=False,
-                    help='Opens a dialog to send funds')
+                    help=app.tr('Opens a dialog to send funds'))
 
     args = app.arguments()
     # Workaround KDE bug

@@ -333,4 +333,32 @@
         <translation></translation>
     </message>
 </context>
+<context>
+    <name>app</name>
+    <message>
+        <location filename="main.py" line="242"/>
+        <source>Usage: %prog [options] [URI]</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="main.py" line="244"/>
+        <source>Use this caption for the cashier window</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="main.py" line="250"/>
+        <source>Opens an interactive Python prompt, and enables infinite in-RAM logging</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="main.py" line="252"/>
+        <source>Use this window icon</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="main.py" line="254"/>
+        <source>Opens a dialog to send funds</source>
+        <translation></translation>
+    </message>
+</context>
 </TS>

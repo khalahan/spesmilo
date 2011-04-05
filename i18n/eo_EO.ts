@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.0" language="en">
+<!DOCTYPE TS><TS version="1.1" language="en">
 <context>
     <name>Cashier</name>
     <message>
@@ -361,6 +360,34 @@
         <location filename="main.py" line="94"/>
         <source>&amp;Quit</source>
         <translation>&amp;Forlasi</translation>
+    </message>
+</context>
+<context>
+    <name>app</name>
+    <message>
+        <location filename="main.py" line="242"/>
+        <source>Usage: %prog [options] [URI]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="main.py" line="244"/>
+        <source>Use this caption for the cashier window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="main.py" line="250"/>
+        <source>Opens an interactive Python prompt, and enables infinite in-RAM logging</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="main.py" line="252"/>
+        <source>Use this window icon</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="main.py" line="254"/>
+        <source>Opens a dialog to send funds</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>
