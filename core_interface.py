@@ -19,7 +19,12 @@ from jsonrpc.proxy import JSONRPCException
 
 class CoreInterface:
     def __init__(self, uri):
-        basea = jsonrpc.ServiceProxy(uri)
+        self.uri = uri
+
+    def _access(self):
+        if hasattr(self, 'access'):
+            return self.access
+        basea = jsonrpc.ServiceProxy(self.uri)
         self.rpcversion = 0
         for access in (basea.bitcoin.__getattr__('1'), basea.bitcoin.v1, basea):
             try:
@@ -40,7 +45,7 @@ class CoreInterface:
         return int(n)
 
     def transactions(self, *args):
-        txl = self.access.listtransactions(*args)
+        txl = self._access().listtransactions(*args)
         for tx in txl:
             for k in ('amount', 'fee'):
                 if k in tx: tx[k] = self._fromAmount(tx[k])
@@ -48,7 +53,7 @@ class CoreInterface:
 
     def get_transaction(self, txid):
         # NOTE: returns a list like transactions, in case we both sent and received
-        tx = self.access.gettransaction(txid)
+        tx = self._access().gettransaction(txid)
         for detail in tx['details']:
             for k, v in tx.iteritems():
                 if k == 'details': continue
@@ -56,33 +61,36 @@ class CoreInterface:
         return tx['details']
 
     def balance(self):
-        b = self.access.getbalance()
+        b = self._access().getbalance()
         b = self._fromAmount(b)
         return b
 
     def stop(self):
-        return self.access.stop()
+        return self._access().stop()
 
     def validate_address(self, address):
-        return self.access.validateaddress(address)['isvalid']
+        return self._access().validateaddress(address)['isvalid']
 
     def send(self, address, amount):
         if amount % 1:
             raise ValueError('Bitcoin does not support precision requested')
         if self.rpcversion == 0:
-            if amount % 1000000 and self.access.getinfo()['version'] < 32100:
+            if amount % 1000000 and self._access().getinfo()['version'] < 32100:
                 raise ValueError('This server does not support precision requested')
             amount /= 100000000.
         return self.access.sendtoaddress(address, amount)
 
     def default_address(self):
-        return self.access.getaccountaddress('')
+        return self._access().getaccountaddress('')
 
     def new_address(self):
-        return self.access.getnewaddress('')
+        return self._access().getnewaddress('')
     
     def is_initialised(self):
-        info = self.access.getinfo()
+        try:
+            info = self._access().getinfo()
+        except IOError:
+            return False
         if 'isinitialized' in info:
             return info['isinitialized']
         # This only happens on older bitcoind which only respond when initialized...

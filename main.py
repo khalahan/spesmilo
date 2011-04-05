@@ -121,6 +121,7 @@ class RootWindow(QMainWindow):
 
     def __init__(self):
         super(RootWindow, self).__init__()
+        self.app = qApp
         
         self.state = self.CLIENT_NONE
     
@@ -151,9 +152,10 @@ class RootWindow(QMainWindow):
         elif self.state == self.CLIENT_CONNECTING:
             try:
                 is_init = self.core.is_initialised()
-            except IOError:
-                error = QErrorMessage()
-                error.showMessage('Internal error: failed to find bitcoin core')
+            except Exception, e:
+                error = QMessageBox(QMessageBox.Critical, 
+                                    self.tr('Error connecting'),
+                                    self.tr(str(e)))
                 error.exec_()
                 qApp.quit()
                 raise
