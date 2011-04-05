@@ -26,7 +26,8 @@ from settings import SpesmiloSettings, SettingsDialog, icon
 def _startup(rootwindow, *args, **kwargs):
     if SpesmiloSettings.useInternalCore():
         import os
-        os.system('bitcoind')
+        user, passwd, port = SpesmiloSettings.getInternalCoreAuth()
+        os.system(' '.join(('bitcoind', '-rpcuser=%s' % (user,), '-rpcpassword=%s' % (passwd,), '-rpcallowip=127.0.0.1', '-rpcport=%d' % (port,))))
     rootwindow.start()
 
 class ConnectingDialog(QDialog):
@@ -146,6 +147,7 @@ class RootWindow(QMainWindow):
         icon._default = icon(options.icon, *icon._defaultSearch)
         self.bitcoin_icon = icon()
         self.caption = options.caption
+        self.core = None
 
     def start(self):
         self.state = self.CLIENT_NONE
@@ -179,6 +181,8 @@ class RootWindow(QMainWindow):
             try:
                 is_init = self.core.is_initialised()
             except Exception, e:
+                import traceback
+                traceback.print_exc()
                 error = QMessageBox(QMessageBox.Critical, 
                                     self.tr('Error connecting'),
                                     self.tr(str(e)))
@@ -194,9 +198,9 @@ class RootWindow(QMainWindow):
         self.stop()
 
     def stop(self, doQuit = True):
-        self.refresh_state_timer.stop()
         try:
-            if SpesmiloSettings.useInternalCore():
+            self.refresh_state_timer.stop()
+            if SpesmiloSettings.useInternalCore() and self.core:
                 # Keep looping until connected so we can issue the stop command
                 while True:
                     try:

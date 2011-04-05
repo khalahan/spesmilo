@@ -38,6 +38,7 @@ class CoreInterface:
             self.rpcversion = info['rpcversion']
             self.access = access
             break
+        return self.access
 
     def _fromAmount(self, n):
         if self.rpcversion == 0:

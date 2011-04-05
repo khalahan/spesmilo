@@ -290,9 +290,16 @@ class SpesmiloSettings:
     def useInternalCore(self):
         return _settings.value('core/internal', 'True') != 'False'
     
+    def getInternalCoreAuth(self):
+        if not hasattr(self, '_ICA'):
+            from random import random
+            passwd = random()
+            self._ICA = ('spesmilo', passwd, 8342)
+        return self._ICA
+
     def getEffectiveURI(self):
         if self.useInternalCore():
-            return 'http://user:pass@localhost:8332'
+            return 'http://%s:%s@127.0.0.1:%d' % self.getInternalCoreAuth()
         return _settings.value('core/uri', 'http://user:pass@localhost:8332')
 
     def getNumberSystem(self):
