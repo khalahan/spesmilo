@@ -157,6 +157,7 @@ class TransactionsTable(QTableWidget):
         self.setItem(0, 2, trans_item)
 
         credits_item = TransactionItem(humanAmount(credit), Qt.AlignRight)
+        credits_item.amount = credit
         self.setItem(0, 3, credits_item)
 
         balance_item = TransactionItem(humanAmount(balance), Qt.AlignRight)
@@ -165,6 +166,17 @@ class TransactionsTable(QTableWidget):
         self.update_confirmation(0, confirms, adjustment=False)
 
         return status_item
+
+    def update_amounts(self):
+        for i in xrange(self.rowCount()):
+            credits_item = self.item(i, 3)
+            credits_item.setText(humanAmount(credits_item.amount))
+
+    def update_counters(self):
+        for i in xrange(self.rowCount()):
+            status_item = self.item(i, 0)
+            status_item.setText('')
+            self.update_confirmation(i, status_item.confirmations, adjustment=False)
 
     def update_confirmations(self, increment, adjustment = True):
         if increment == 0 and adjustment:
@@ -216,6 +228,10 @@ class Cashier(QDialog):
         youraddy.addWidget(self.addy)
         youraddy.addWidget(newaddybtn)
         youraddy.addWidget(copyaddybtn)
+        youraddy.addStretch()
+        settingsbtn = QToolButton(self)
+        settingsbtn.setDefaultAction(self.settings_act)
+        youraddy.addWidget(settingsbtn)
         youraddy.addStretch()
         youraddy.addWidget(self.balance_label)
         youraddy.addWidget(sendbtn)
@@ -273,6 +289,13 @@ class Cashier(QDialog):
         category = t['category']
         etxid = "%s/%s" % (txid, category)
         return etxid
+
+    def update_amounts(self):
+        self.transactions_table.update_amounts()
+
+    def update_counters(self):
+        self.refresh_balance_label()
+        self.transactions_table.update_counters()
 
     def refresh_transactions(self):
         debuglog = []
@@ -388,7 +411,11 @@ class Cashier(QDialog):
             self._refresh_transactions_debug += [debuglog]
 
     def refresh_balance(self):
-        bltext = self.tr('Balance: %s') % (humanAmount(self.core.balance(), wantTLA=True),)
+        self.balance = self.core.balance()
+        self.refresh_balance_label()
+
+    def refresh_balance_label(self):
+        bltext = self.tr('Balance: %s') % (humanAmount(self.balance, wantTLA=True),)
         self.balance_label.setText(bltext)
 
     def create_actions(self):
@@ -403,6 +430,10 @@ class Cashier(QDialog):
             self.tr('Copy address'),
             self, toolTip=self.tr('Copy address to clipboard'),
             triggered=self.copy_address)
+        self.settings_act = QAction(icon('configure'),
+            self.tr('Settings'),
+            self, toolTip=self.tr('Configure Spesmilo'),
+            triggered=self.open_settings)
 
     def new_send_dialog(self):
         if self.parent() is not None:
@@ -415,6 +446,14 @@ class Cashier(QDialog):
 
     def copy_address(self):
         self.clipboard.setText(self.addy.text())
+
+    def open_settings(self):
+        if hasattr(self, 'settingsdlg'):
+            self.settingsdlg.show()
+            self.settingsdlg.setFocus()
+        else:
+            import settings
+            self.settingsdlg = settings.SettingsDialog(self)
 
 if __name__ == '__main__':
     import os

@@ -37,32 +37,116 @@ def icon(*ss):
     return QIcon()
 icon._defaultSearch = ('spesmilo', 'bitcoin', 'icons/bitcoin32.xpm')
 
-class SettingsTabCore(QWidget):
-    def __init__(self, parent, enableApply = None):
-        super(SettingsTabCore, self).__init__(parent)
-        
+class SettingsTabBASE(QWidget):
+    def __init__(self, parent = None, dlg = None):
+        super(SettingsTabBASE, self).__init__(parent)
+
+        if parent:
+            self.pp = parent.parent()
+            self.pphas = lambda x: hasattr(self.pp, x)
+        else:
+            self.pphas = lambda x: False
+
+        self.options = []
+        self._build()
+
+        self._dlg = dlg
+        nea = lambda: dlg.enableApply()
+        for o in self.options:
+            o._onChange(nea)
+
+    def loadSettings(self, settings = None):
+        for o in self.options:
+            o._CV = o._load(settings)
+            o._OV = o._CV
+            o._set(o._CV)
+
+    def checkSettings(self):
+        pass
+
+    def saveSettings(self, settings = None):
+        RR = False
+        for o in self.options:
+            nv = o._get()
+            if nv != o._CV and nv != o._OV:
+                o._CV = nv
+                if hasattr(o, '_apply'):
+                    if o._apply(nv):
+                        RR = True
+                    else:
+                        o._OV = nv
+                else:
+                    RR = True
+            o._save(settings, nv)
+        if RR:
+            self._dlg.requireRestart()
+
+class SettingsWidgetMixIn(object):
+    def __init__(self, *args, **kwargs):
+        self._key = kwargs['key']
+        self._default = kwargs['default']
+        del kwargs['key']
+        del kwargs['default']
+        super(SettingsWidgetMixIn, self).__init__(*args, **kwargs)
+
+    def _load(self, settings):
+        return settings.value(self._key, self._default)
+    def _save(self, settings, newvalue):
+        settings.setValue(self._key, newvalue)
+
+class SettingsQCheckBox(SettingsWidgetMixIn, QCheckBox):
+    def _onChange(self, slot):
+        self.stateChanged.connect(slot)
+
+    def _load(self, settings):
+        r = settings.value(self._key, None)
+        if r is None:
+            return self._default
+        return r != 'False'
+    def _save(self, settings, newvalue):
+        settings.setValue(self._key, repr(newvalue))
+
+    def _get(self):
+        return self.isChecked()
+    def _set(self, newvalue):
+        self.setChecked(newvalue)
+
+class SettingsQComboBox(SettingsWidgetMixIn, QComboBox):
+    def _onChange(self, slot):
+        self.currentIndexChanged.connect(slot)
+
+    def _get(self):
+        return self.itemData(self.currentIndex())
+    def _set(self, newvalue):
+        self.setCurrentIndex(self.findData(newvalue))
+
+class SettingsQLineEdit(SettingsWidgetMixIn, QLineEdit):
+    def _onChange(self, slot):
+        self.textChanged.connect(slot)
+
+    def _get(self):
+        return self.text()
+    def _set(self, newvalue):
+        self.setText(newvalue)
+
+class SettingsTabCore(SettingsTabBASE):
+    def _build(self):
         cblay = QFormLayout()
-        self.cbInternal = QCheckBox(self)
+        self.cbInternal = SettingsQCheckBox(self, key='core/internal', default=True)
+        self.options.append(self.cbInternal)
         self.lblInternal = QLabel(self.tr('Use internal core'))
         cblay.addRow(self.cbInternal, self.lblInternal)
         self.cbInternal.stateChanged.connect(self.updateURIValidity)
         
         lelay = QFormLayout()
         self.lblURI = QLabel(self.tr('URI:'))
-        self.leURI = QLineEdit()
+        self.leURI = SettingsQLineEdit(key='core/uri', default='http://user:pass@localhost:8332')
+        self.options.append(self.leURI)
         lelay.addRow(self.lblURI, self.leURI)
 
         mainlay = QVBoxLayout(self)
         mainlay.addLayout(cblay)
         mainlay.addLayout(lelay)
-        
-        if enableApply is not None:
-            self.cbInternal.stateChanged.connect(lambda: enableApply())
-            self.leURI.textChanged.connect(lambda: enableApply())
-    
-    def loadSettings(self, settings = None):
-        self.cbInternal.setChecked(settings.value('core/internal', 'True') != 'False')
-        self.leURI.setText(settings.value('core/uri', 'http://user:pass@localhost:8332'))
     
     def checkSettings(self):
         if os.system('bitcoind --help'):
@@ -70,63 +154,60 @@ class SettingsTabCore(QWidget):
             self.cbInternal.setEnabled(False)
             self.lblInternal.setEnabled(False)
     
-    def saveSettings(self, settings = None):
-        settings.setValue('core/internal', repr(self.cbInternal.isChecked()))
-        settings.setValue('core/uri', self.leURI.text())
-    
     def updateURIValidity(self):
         en = not self.cbInternal.isChecked()
         self.lblURI.setEnabled(en)
         self.leURI.setEnabled(en)
 
-class SettingsTabLanguage(QWidget):
-    def __init__(self, parent, enableApply = None):
-        super(SettingsTabLanguage, self).__init__(parent)
+class SettingsTabLanguage(SettingsTabBASE):
+    def _build(self):
+        self._deferred = {}
         
         mainlay = QFormLayout(self)
         
-        self.lang = QComboBox()
+        self.lang = SettingsQComboBox(key='language/language', default='en_GB')
         self.lang.addItem(self.tr('American'), 'en_US')
         self.lang.addItem(self.tr('English'), 'en_GB')
         self.lang.addItem(self.tr('Esperanto'), 'eo_EO')
+        self.options.append(self.lang)
         mainlay.addRow(self.tr('Language:'), self.lang)
         
         nslay = QHBoxLayout()
-        self.strength = QComboBox()
+        self.strength = SettingsQComboBox(key='units/strength', default='Assume')
+        self.strength._apply = lambda nv: self._defer_update('amounts')
         self.strength.addItem(self.tr('Assume'), 'Assume')
         self.strength.addItem(self.tr('Prefer'), 'Prefer')
         self.strength.addItem(self.tr('Force'), 'Force')
+        self.options.append(self.strength)
         nslay.addWidget(self.strength)
-        self.numsys = QComboBox(self)
+        self.numsys = SettingsQComboBox(self, key='units/numsys', default='Decimal')
+        self.numsys._apply = lambda nv: self._defer_update('counters', 'amounts')
         self.numsys.addItem(self.tr('Decimal'), 'Decimal')
         self.numsys.addItem(self.tr('Tonal'), 'Tonal')
+        self.options.append(self.numsys)
         nslay.addWidget(self.numsys)
         mainlay.addRow(self.tr('Number system:'), nslay)
         
-        self.hideTLA = QCheckBox(self.tr('Hide preferred unit name'))
+        self.hideTLA = SettingsQCheckBox(self.tr('Hide preferred unit name'), key='units/hideTLA', default=True)
+        self.hideTLA._apply = lambda nv: self._defer_update('amounts')
+        self.options.append(self.hideTLA)
         mainlay.addRow(self.hideTLA)
+    
+    def _defer_update(self, *updates):
+        RR = False
+        for update in updates:
+            update = 'update_%s' % (update,)
+            if self.pphas(update):
+                self._deferred[update] = True
+            else:
+                RR = True
+        return RR
 
-        if enableApply is not None:
-            self.lang.currentIndexChanged.connect(lambda: enableApply())
-            self.numsys.currentIndexChanged.connect(lambda: enableApply())
-            self.strength.currentIndexChanged.connect(lambda: enableApply())
-            self.hideTLA.stateChanged.connect(lambda: enableApply())
-    
-    def loadSettings(self, settings = None):
-        self.lang.setCurrentIndex(self.lang.findData(settings.value('language/language', 'en_GB')))
-        self.numsys.setCurrentIndex(self.numsys.findData(settings.value('units/numsys', 'Decimal')))
-        self.strength.setCurrentIndex(self.strength.findData(settings.value('units/strength', 'Assume')))
-        self.hideTLA.setChecked(settings.value('units/hideTLA', 'True') != 'False')
-    
-    def checkSettings(self):
-        pass
-    
-    def saveSettings(self, settings = None):
-        settings.setValue('language/language', self.lang.itemData(self.lang.currentIndex()))
-        SpesmiloSettings.loadTranslator()
-        settings.setValue('units/numsys', self.numsys.itemData(self.numsys.currentIndex()))
-        settings.setValue('units/strength', self.strength.itemData(self.strength.currentIndex()))
-        settings.setValue('units/hideTLA', repr(self.hideTLA.isChecked()))
+    def saveSettings(self, *args, **kwargs):
+        super(SettingsTabLanguage, self).saveSettings(*args, **kwargs)
+        for du in self._deferred.iterkeys():
+            getattr(self.pp, du)()
+        self._deferred = {}
 
 class SettingsDialog(QDialog):
     def __init__(self, parent):
@@ -137,8 +218,8 @@ class SettingsDialog(QDialog):
         tabw = QTabWidget()
         
         self.tabs = []
-        self.tabs.append(('Core', SettingsTabCore(self, self.enableApply)))
-        self.tabs.append(('Language', SettingsTabLanguage(self, self.enableApply)))
+        self.tabs.append(('Core', SettingsTabCore(self, self)))
+        self.tabs.append(('Language', SettingsTabLanguage(self, self)))
         
         for name, widget in self.tabs:
             tabw.addTab(widget, name)
@@ -192,6 +273,14 @@ class SettingsDialog(QDialog):
 
     def enableApply(self):
         self.applybtn.setEnabled(True)
+
+    def requireRestart(self):
+        if not hasattr(self.parent(), 'core'):
+            return
+        msg = QMessageBox(QMessageBox.Information,
+                          self.tr('Restart required'),
+                          self.tr('Restarting Spesmilo is required for some changes to take effect.'))
+        msg.exec_()
 
 class SpesmiloSettings:
     def isConfigured(self):
