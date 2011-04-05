@@ -41,7 +41,11 @@ class FocusLineEdit(QLineEdit):
 
     def sizeHint(self):
         sizeh = super(FocusLineEdit, self).sizeHint()
-        sizeh.setWidth(self.fontMetrics().averageCharWidth() * self.maxLength())
+        FM = self.fontMetrics()
+        aw = [FM.width(L) for L in '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz']
+        aw.sort()
+        mw = aw[30]
+        sizeh.setWidth(mw * self.maxLength())
         return sizeh
 
 class TransactionItem(QTableWidgetItem):
