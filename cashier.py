@@ -190,20 +190,24 @@ class TransactionsTable(QTableWidget):
             self.update_confirmation(i, increment, adjustment)
 
     def enable_table_item(self, item):
-        dummy = QTableWidgetItem()
+        if not hasattr(self, '_eti'):
+            # Must already be enabled :p
+            return
         brush = item.foreground()
-        brush.setColor(dummy.foreground().color())
+        brush.setColor(self._eti[0])
         item.setForeground(brush)
         font = item.font()
-        font.setStyle(dummy.font().style())
+        font.setStyle(self._eti[1])
         item.setFont(font)
 
     def disable_table_item(self, item):
         brush = item.foreground()
-        brush.setColor(Qt.gray)
-        item.setForeground(brush)
         font = item.font()
+        if not hasattr(self, '_eti'):
+            self._eti = (brush.color(), font.style())
+        brush.setColor(Qt.gray)
         font.setStyle(font.StyleItalic)
+        item.setForeground(brush)
         item.setFont(font)
 
 class Cashier(QDialog):
