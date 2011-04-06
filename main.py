@@ -28,7 +28,7 @@ def _startup(rootwindow, *args, **kwargs):
         import os
         user, passwd, port = SpesmiloSettings.getInternalCoreAuth()
         os.system(' '.join(('bitcoind', '-rpcuser=%s' % (user,), '-rpcpassword=%s' % (passwd,), '-rpcallowip=127.0.0.1', '-rpcport=%d' % (port,))))
-    rootwindow.start()
+    rootwindow.start(*args, **kwargs)
 
 class ConnectingDialog(QDialog):
     def __init__(self, parent):
@@ -149,7 +149,7 @@ class RootWindow(QMainWindow):
         self.caption = options.caption
         self.core = None
 
-    def start(self):
+    def start(self, options, args):
         self.state = self.CLIENT_NONE
         self.uri = SpesmiloSettings.getEffectiveURI()
         self.core = core_interface.CoreInterface(self.uri)
