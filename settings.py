@@ -20,6 +20,8 @@ import re
 from PySide.QtCore import *
 from PySide.QtGui import *
 
+import anynumber
+
 _settings = QSettings('Bitcoin', 'Spesmilo')
 
 def icon(*ss):
@@ -311,81 +313,19 @@ class SpesmiloSettings:
     def getHideUnitTLA(self):
         return _settings.value('units/hideTLA', 'True') != 'False'
 
-    def _commafy(self, s, groupsize):
-        n = ''
-        if s[0] == '-':
-            n = s[0]
-            s = s[1:]
-        firstcomma = len(s) % groupsize or groupsize
-        n += s[:firstcomma]
-        r = s[firstcomma:]
-        segments = (n,) + tuple(r[i:i+groupsize] for i in range(0, len(r), groupsize))
-        return ','.join(segments)
-
-    def format_decimal(self, n, addSign = False, wantDelimiters = False, centsHack = False):
-        if not type(n) is Decimal:
-            n = Decimal(str(n))
-        if centsHack and not n % Decimal('.1'):
-            n = n.quantize(Decimal('0.00'))
-            s = str(n)
-        else:
-            s = str(int(n)) + str(abs(n % 1) + 1)[1:]
-            if n < 0 and int(n) == 0:
-                s = '-' + s
-        if wantDelimiters:
-            s = self._commafy(s, 3)
-        if addSign and n >= 0:
-                s = "+" + s
-        return s
-
-    _toTonalDict = dict(((57, u'\ue9d9'), (65, u'\ue9da'), (66, u'\ue9db'), (67, u'\ue9dc'), (68, u'\ue9dd'), (69, u'\ue9de'), (70, u'\ue9df'), (97, u'\ue9da'), (98, u'\ue9db'), (99, u'\ue9dc'), (100, u'\ue9dd'), (101, u'\ue9de'), (102, u'\ue9df')))
-    def format_tonal(self, n, addSign = False, wantDelimiters = False):
-        s = "%x" % n
-        if wantDelimiters:
-            s = self._commafy(s, 4)
-        n = abs(n) % 1
-        if n:
-            s += '.'
-            while n:
-                n *= 16
-                s += "%x" % n
-                n %= 1
-        s = unicode(s).translate(self._toTonalDict)
-        if addSign and n >= 0:
-                s = "+" + s
-        return s
-
-    _fromTonalDict = dict(((0xe9d9, u'9'), (0xe9da, u'a'), (57, u'a'), (0xe9db, u'b'), (0xe9dc, u'c'), (0xe9dd, u'd'), (0xe9de, u'e'), (0xe9df, u'f')))
-    def parse_tonal(self, s, mult = 1):
-        s = unicode(s).translate(self._fromTonalDict)
-        s = ''.join(s.split(','))
-        try:
-            i = s.index('.')
-            s = s.rstrip('0')
-        except ValueError:
-            i = len(s)
-        n = 0
-        if i:
-            n = int(s[:i], 16)
-        n *= mult
-        if mult / (16 ** (len(s) - i - 1)) < 1:
-            mult = float(mult)
-        for j in range(1, len(s) - i):
-            d = int(s[i+j], 16)
-            n += (d * mult) / (16 ** j)
-        return n
-
     def format_number(self, n, addSign = False, wantDelimiters = False):
         ns = self.getNumberSystem()
         if ns == 'Tonal':
-            ens = self.format_tonal
+            n = anynumber.Tonal(n)
         else:
-            ens = self.format_decimal
-        return ens(n, addSign=addSign, wantDelimiters=wantDelimiters)
+            n = anynumber.Decimal(n)
+        return n.format(addSign=addSign, wantDelimiters=wantDelimiters)
 
     def _toBTC(self, n, addSign = False, wantTLA = None, wantDelimiters = False):
-        n = Decimal(n) / 100000000
-        s = self.format_decimal(n, addSign=addSign, wantDelimiters=wantDelimiters, centsHack=True)
+        n = anynumber.Decimal(n) / 100000000
+        s = n.format(addSign=addSign, wantDelimiters=wantDelimiters)
+        if ('  ' + s)[-3] != '.':
+            s += '0' if (' ' + s)[-2] == '.' else '.00'
         if wantTLA is None:
             wantTLA = not self.getHideUnitTLA()
         if wantTLA:
@@ -393,13 +333,13 @@ class SpesmiloSettings:
         return s
 
     def _fromBTC(self, s):
-        s = float(s)
+        s = anynumber.Decimal(s)
         s = int(s * 100000000)
         return s
 
     def _toTBC(self, n, addSign = False, wantTLA = None, wantDelimiters = False):
-        n /= float(0x10000)
-        s = self.format_tonal(n, addSign=addSign, wantDelimiters=wantDelimiters)
+        n = anynumber.Tonal(n) / 0x10000
+        s = n.format(addSign=addSign, wantDelimiters=wantDelimiters)
         if wantTLA is None:
             wantTLA = not self.getHideUnitTLA()
         if wantTLA:
@@ -407,7 +347,7 @@ class SpesmiloSettings:
         return s
 
     def _fromTBC(self, s):
-        n = self.parse_tonal(s, mult=0x10000)
+        n = int(anynumber.Tonal(s) * 0x10000)
         return n
 
     def ChooseUnits(self, n, guess = None):

@@ -20,6 +20,8 @@ pyo = $(patsubst %.py,%.pyo,$(wildcard *.py jsonrpc/*.py))
 exescript = $(APP).exescript
 icon = icons/bitcoin32.png
 
+GIT_POC = if [ -e $(2) ]; then ( cd $(2) && git pull; ); else git clone $(1) $(2); $(3); fi
+
 all: $(APP) $(qm) $(pyo) $(icon)
 
 %.qm: %.ts
@@ -50,6 +52,9 @@ exescript:
 local:
 	mkdir -p lib
 	svn co http://svn.json-rpc.org/trunk/python-jsonrpc/jsonrpc lib/jsonrpc
+	$(call GIT_POC, \
+		git://gitorious.org/anynumber/python.git, lib/anynumber, \
+		ln -s anynumber.py lib/anynumber/__init__.py)
 
 clean:
 	rm -vf $(qm) $(pyo) $(APP) $(exescript)
