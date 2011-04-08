@@ -150,32 +150,32 @@
 <context>
     <name>SettingsDialog</name>
     <message>
-        <location filename="settings.py" line="235"/>
+        <location filename="settings.py" line="236"/>
         <source>&amp;OK</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.py" line="240"/>
+        <location filename="settings.py" line="241"/>
         <source>&amp;Apply</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.py" line="245"/>
+        <location filename="settings.py" line="246"/>
         <source>&amp;Cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.py" line="257"/>
+        <location filename="settings.py" line="258"/>
         <source>Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.py" line="282"/>
+        <location filename="settings.py" line="283"/>
         <source>Restart required</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.py" line="282"/>
+        <location filename="settings.py" line="283"/>
         <source>Restarting Spesmilo is required for some changes to take effect.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -211,43 +211,48 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.py" line="175"/>
+        <location filename="settings.py" line="176"/>
         <source>Language:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.py" line="180"/>
+        <location filename="settings.py" line="181"/>
         <source>Assume</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.py" line="181"/>
+        <location filename="settings.py" line="182"/>
         <source>Prefer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.py" line="182"/>
+        <location filename="settings.py" line="183"/>
         <source>Force</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.py" line="187"/>
+        <location filename="settings.py" line="188"/>
         <source>Decimal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.py" line="188"/>
+        <location filename="settings.py" line="189"/>
         <source>Tonal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.py" line="191"/>
+        <location filename="settings.py" line="192"/>
         <source>Number system:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.py" line="193"/>
+        <location filename="settings.py" line="194"/>
         <source>Hide preferred unit name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="settings.py" line="174"/>
+        <source>Dutch</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
