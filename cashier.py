@@ -121,6 +121,17 @@ class TransactionsTable(QTableWidget):
         for j in range(0, 5):
             sf(self.item(i, j))
 
+    def update_transaction_time(self, row, unixtime):
+        date_formatter = QDateTime()
+        date_formatter.setTime_t(unixtime)
+        # we need to do this in parts to have a month name translation
+        # datetime = date_formatter.toString('hh:mm d ')
+        # datetime += self.tr(date_formatter.toString('MMM '))
+        # datetime += date_formatter.toString('yy')
+        datetime = date_formatter.toString('hh:mm d MMM yy')
+        date_item = self.item(row, 1)
+        date_item.setText(datetime)
+
     def add_transaction_entry(self, transaction):
         self.insertRow(0)
         confirms = None
@@ -140,15 +151,9 @@ class TransactionsTable(QTableWidget):
         status_item.confirmations = confirms
         self.setItem(0, 0, status_item)
 
-        date_formatter = QDateTime()
-        date_formatter.setTime_t(unixtime)
-        # we need to do this in parts to have a month name translation
-        # datetime = date_formatter.toString('hh:mm d ')
-        # datetime += self.tr(date_formatter.toString('MMM '))
-        # datetime += date_formatter.toString('yy')
-        datetime = date_formatter.toString('hh:mm d MMM yy')
-        date_item = TransactionItem(datetime)
+        date_item = TransactionItem('')
         self.setItem(0, 1, date_item)
+        self.update_transaction_time(0, unixtime)
 
         if category == 'send':
             description = self.tr('Sent to %s')%address
@@ -401,8 +406,10 @@ class Cashier(QDialog):
                     status_item = utx[etxid][0]
                     # NOTE: the row may have changed since the start of the function, so don't try to cache it from above
                     row = self.transactions_table.row(status_item)
+                    unixtime = t['time']
 
                     self.transactions_table.move_row(row, 0)
+                    self.transactions_table.update_transaction_time(row, unixtime)
                     continue
 
                 status_item = self.transactions_table.add_transaction_entry(t)
