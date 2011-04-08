@@ -1,60 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.0" language="en_GB">
+<!DOCTYPE TS><TS version="1.1" language="en_GB">
 <context>
     <name>Cashier</name>
     <message>
-        <location filename="cashier.py" line="225"/>
+        <location filename="cashier.py" line="244"/>
         <source>Your address:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="cashier.py" line="258"/>
+        <location filename="cashier.py" line="277"/>
         <source>Spesmilo</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="cashier.py" line="423"/>
+        <location filename="cashier.py" line="454"/>
         <source>Balance: %s</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="cashier.py" line="427"/>
+        <location filename="cashier.py" line="458"/>
         <source>Send</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="cashier.py" line="427"/>
+        <location filename="cashier.py" line="458"/>
         <source>Send bitcoins to another person</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="cashier.py" line="430"/>
+        <location filename="cashier.py" line="461"/>
         <source>New address</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="cashier.py" line="430"/>
+        <location filename="cashier.py" line="461"/>
         <source>Create new address for accepting bitcoins</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="cashier.py" line="434"/>
+        <location filename="cashier.py" line="465"/>
         <source>Copy address</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="cashier.py" line="434"/>
+        <location filename="cashier.py" line="465"/>
         <source>Copy address to clipboard</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="cashier.py" line="438"/>
+        <location filename="cashier.py" line="469"/>
         <source>Settings</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="cashier.py" line="438"/>
+        <location filename="cashier.py" line="469"/>
         <source>Configure Spesmilo</source>
         <translation></translation>
     </message>
@@ -151,32 +150,32 @@
 <context>
     <name>SettingsDialog</name>
     <message>
-        <location filename="settings.py" line="233"/>
+        <location filename="settings.py" line="235"/>
         <source>&amp;OK</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="settings.py" line="238"/>
+        <location filename="settings.py" line="240"/>
         <source>&amp;Apply</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="settings.py" line="243"/>
+        <location filename="settings.py" line="245"/>
         <source>&amp;Cancel</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="settings.py" line="255"/>
+        <location filename="settings.py" line="257"/>
         <source>Settings</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="settings.py" line="280"/>
+        <location filename="settings.py" line="282"/>
         <source>Restart required</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="settings.py" line="280"/>
+        <location filename="settings.py" line="282"/>
         <source>Restarting Spesmilo is required for some changes to take effect.</source>
         <translation></translation>
     </message>
@@ -184,12 +183,12 @@
 <context>
     <name>SettingsTabCore</name>
     <message>
-        <location filename="settings.py" line="137"/>
+        <location filename="settings.py" line="139"/>
         <source>Use internal core</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="settings.py" line="142"/>
+        <location filename="settings.py" line="144"/>
         <source>URI:</source>
         <translation></translation>
     </message>
@@ -197,57 +196,57 @@
 <context>
     <name>SettingsTabLanguage</name>
     <message>
-        <location filename="settings.py" line="169"/>
+        <location filename="settings.py" line="171"/>
         <source>American</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="settings.py" line="170"/>
+        <location filename="settings.py" line="172"/>
         <source>English</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="settings.py" line="171"/>
+        <location filename="settings.py" line="173"/>
         <source>Esperanto</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="settings.py" line="173"/>
+        <location filename="settings.py" line="175"/>
         <source>Language:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="settings.py" line="178"/>
+        <location filename="settings.py" line="180"/>
         <source>Assume</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="settings.py" line="179"/>
+        <location filename="settings.py" line="181"/>
         <source>Prefer</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="settings.py" line="180"/>
+        <location filename="settings.py" line="182"/>
         <source>Force</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="settings.py" line="185"/>
+        <location filename="settings.py" line="187"/>
         <source>Decimal</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="settings.py" line="186"/>
+        <location filename="settings.py" line="188"/>
         <source>Tonal</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="settings.py" line="189"/>
+        <location filename="settings.py" line="191"/>
         <source>Number system:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="settings.py" line="191"/>
+        <location filename="settings.py" line="193"/>
         <source>Hide preferred unit name</source>
         <translation></translation>
     </message>
@@ -280,22 +279,22 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="cashier.py" line="154"/>
+        <location filename="cashier.py" line="159"/>
         <source>Sent to %s</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="cashier.py" line="156"/>
+        <location filename="cashier.py" line="161"/>
         <source>Received to %s</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="cashier.py" line="158"/>
+        <location filename="cashier.py" line="163"/>
         <source>Generated</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="cashier.py" line="160"/>
+        <location filename="cashier.py" line="165"/>
         <source>Moved</source>
         <translation></translation>
     </message>
