@@ -172,6 +172,16 @@ class TransactionsTable(QTableWidget):
 
         return status_item
 
+    def move_row(self, from_row, to_row):
+        items = []
+        CC = self.columnCount()
+        for col in xrange(CC):
+            items.append(self.takeItem(from_row, col))
+        self.removeRow(from_row)
+        self.insertRow(to_row)
+        for col in xrange(CC):
+            self.setItem(to_row, col, items[col])
+
     def update_amounts(self):
         for i in xrange(self.rowCount()):
             credits_item = self.item(i, 3)
@@ -313,6 +323,7 @@ class Cashier(QDialog):
         if not self.last_tx is None:
             # Figure out just how many fetches are needed to comfortably update new unconfirmed tx
             fetchtx = 0
+            debuglog += [{'raw_unconfirmed_tx': self.unconfirmed_tx}]
             for etxid, status_item in self.unconfirmed_tx:
                 row = self.transactions_table.row(status_item)
                 utx[etxid] = [status_item, None]
@@ -384,10 +395,19 @@ class Cashier(QDialog):
 
             # Add any new transactions
             for t in transactions:
+                etxid = self.__etxid(t)
+                if etxid in utx:
+                    # When a transaction is goes from 0 to 1 confirmation, bitcoind seems to reset its time and position in the listtransactions list :(
+                    status_item = utx[etxid][0]
+                    # NOTE: the row may have changed since the start of the function, so don't try to cache it from above
+                    row = self.transactions_table.row(status_item)
+
+                    self.transactions_table.move_row(row, 0)
+                    continue
+
                 status_item = self.transactions_table.add_transaction_entry(t)
                 if 'confirmations' not in t: continue
                 if t['confirmations'] < self.transactions_table.final_confirmation:
-                    etxid = self.__etxid(t)
                     self.unconfirmed_tx.insert(0, (etxid, status_item) )
                     debuglog += ["New unconfirmed tx: %s" % (etxid,)]
             self.last_tx = transactions[-1]['txid']
@@ -404,10 +424,10 @@ class Cashier(QDialog):
                 etxid = self.__etxid(t)
                 if etxid in utx:
                     confirms = t['confirmations']
-                    debuglog += ["Tx %s has %d confirms" % (etxid, confirms)]
                     status_item = utx[etxid][0]
                     # NOTE: the row may have changed since the start of the function, so don't try to cache it from above
                     row = self.transactions_table.row(status_item)
+                    debuglog += ["Tx %s (row %d) has %d confirms" % (etxid, row, confirms)]
                     self.transactions_table.update_confirmation(row, confirms, adjustment=False)
                     del utx[etxid]
                     if confirms >= self.transactions_table.final_confirmation:
