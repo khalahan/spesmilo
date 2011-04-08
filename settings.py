@@ -168,10 +168,15 @@ class SettingsTabLanguage(SettingsTabBASE):
         mainlay = QFormLayout(self)
         
         self.lang = SettingsQComboBox(key='language/language', default='en_GB')
-        self.lang.addItem(self.tr('American'), 'en_US')
-        self.lang.addItem(self.tr('English'), 'en_GB')
-        self.lang.addItem(self.tr('Esperanto'), 'eo_EO')
-        self.lang.addItem(self.tr('Dutch'), 'nl_NL')
+        langlist = [
+            (self.tr('American'), 'en_US'),
+            (self.tr('English'), 'en_GB'),
+            (self.tr('Esperanto'), 'eo_EO'),
+            (self.tr('Dutch'), 'nl_NL'),
+        ]
+        langlist.sort()
+        for lang in langlist:
+            self.lang.addItem(*lang)
         self.options.append(self.lang)
         mainlay.addRow(self.tr('Language:'), self.lang)
         
