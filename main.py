@@ -149,7 +149,7 @@ class RootWindow(QMainWindow):
         self.caption = options.caption
         self.core = None
 
-    def start(self, options, args):
+    def start(self, options = None, args = None):
         self.state = self.CLIENT_NONE
         self.uri = SpesmiloSettings.getEffectiveURI()
         self.core = core_interface.CoreInterface(self.uri)
