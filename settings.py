@@ -167,8 +167,9 @@ class SettingsTabLanguage(SettingsTabBASE):
         
         mainlay = QFormLayout(self)
         
-        self.lang = SettingsQComboBox(key='language/language', default='en_GB')
+        self.lang = SettingsQComboBox(key='language/language', default='')
         langlist = [
+            (self.tr('(Default)'), ''),
             (self.tr('American'), 'en_US'),
             (self.tr('English'), 'en_GB'),
             (self.tr('Esperanto'), 'eo_EO'),
@@ -420,10 +421,16 @@ class SpesmiloSettings:
         return ens(s)
 
     def loadTranslator(self):
-        lang = _settings.value('language/language', 'en_GB')
+        lang = _settings.value('language/language', '')
+        if not lang:
+            lang = os.getenv('LC_ALL') \
+                or os.getenv('LC_MESSAGES') \
+                or os.getenv('LANG')
+            if not lang:
+                return
         if not hasattr(self, 'translator'):
             self.translator = QTranslator()
-        self.translator.load('i18n/%s' % (lang,))
+        self.translator.load(lang, 'i18n')
         app = QCoreApplication.instance()
         app.installTranslator(self.translator)
 
