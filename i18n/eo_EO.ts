@@ -70,6 +70,16 @@
         <source>Connecting...</source>
         <translation>Kunligiĝas...</translation>
     </message>
+    <message>
+        <location filename="main.py" line="45"/>
+        <source>&amp;Configure</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="main.py" line="49"/>
+        <source>&amp;Abort</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RootWindow</name>
@@ -161,36 +171,41 @@
         <source>Your send failed: %s</source>
         <translation>Via sendo malsukcesis: %s</translation>
     </message>
+    <message>
+        <location filename="send.py" line="95"/>
+        <source>Invalid bitcoin URI</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SettingsDialog</name>
     <message>
-        <location filename="settings.py" line="246"/>
+        <location filename="settings.py" line="251"/>
         <source>&amp;Cancel</source>
         <translation>&amp;Nuligi</translation>
     </message>
     <message>
-        <location filename="settings.py" line="236"/>
+        <location filename="settings.py" line="241"/>
         <source>&amp;OK</source>
         <translation>&amp;Jes</translation>
     </message>
     <message>
-        <location filename="settings.py" line="241"/>
+        <location filename="settings.py" line="246"/>
         <source>&amp;Apply</source>
         <translation>&amp;Apliki</translation>
     </message>
     <message>
-        <location filename="settings.py" line="258"/>
+        <location filename="settings.py" line="263"/>
         <source>Settings</source>
         <translation>Prefereco</translation>
     </message>
     <message>
-        <location filename="settings.py" line="283"/>
+        <location filename="settings.py" line="288"/>
         <source>Restart required</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.py" line="283"/>
+        <location filename="settings.py" line="288"/>
         <source>Restarting Spesmilo is required for some changes to take effect.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -211,62 +226,62 @@
 <context>
     <name>SettingsTabLanguage</name>
     <message>
-        <location filename="settings.py" line="171"/>
+        <location filename="settings.py" line="172"/>
         <source>American</source>
         <translation>Usona</translation>
     </message>
     <message>
-        <location filename="settings.py" line="172"/>
+        <location filename="settings.py" line="173"/>
         <source>English</source>
         <translation>Angla</translation>
     </message>
     <message>
-        <location filename="settings.py" line="173"/>
+        <location filename="settings.py" line="174"/>
         <source>Esperanto</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="settings.py" line="176"/>
+        <location filename="settings.py" line="181"/>
         <source>Language:</source>
         <translation>Lingvo:</translation>
     </message>
     <message>
-        <location filename="settings.py" line="181"/>
+        <location filename="settings.py" line="186"/>
         <source>Assume</source>
         <translation>Kredi</translation>
     </message>
     <message>
-        <location filename="settings.py" line="182"/>
+        <location filename="settings.py" line="187"/>
         <source>Prefer</source>
         <translation>Preferi</translation>
     </message>
     <message>
-        <location filename="settings.py" line="183"/>
+        <location filename="settings.py" line="188"/>
         <source>Force</source>
         <translation>Ĉiam</translation>
     </message>
     <message>
-        <location filename="settings.py" line="188"/>
+        <location filename="settings.py" line="193"/>
         <source>Decimal</source>
         <translation>Dekuma</translation>
     </message>
     <message>
-        <location filename="settings.py" line="189"/>
+        <location filename="settings.py" line="194"/>
         <source>Tonal</source>
         <translation>Tonuma</translation>
     </message>
     <message>
-        <location filename="settings.py" line="192"/>
+        <location filename="settings.py" line="197"/>
         <source>Number system:</source>
         <translation>Nombrosistemo:</translation>
     </message>
     <message>
-        <location filename="settings.py" line="194"/>
+        <location filename="settings.py" line="199"/>
         <source>Hide preferred unit name</source>
         <translation>Kaŝi preferatan unitnomon</translation>
     </message>
     <message>
-        <location filename="settings.py" line="174"/>
+        <location filename="settings.py" line="175"/>
         <source>Dutch</source>
         <translation type="unfinished"></translation>
     </message>

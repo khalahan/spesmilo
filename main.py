@@ -42,11 +42,11 @@ class ConnectingDialog(QDialog):
         
         button_layout = QHBoxLayout()
         button_layout.addStretch()
-        cfgbtn = QPushButton('&Configure')
+        cfgbtn = QPushButton(self.tr('&Configure'))
         cfgbtn.clicked.connect(self.config)
         self.cfgbtn = cfgbtn
         button_layout.addWidget(cfgbtn)
-        abortbtn = QPushButton('&Abort')
+        abortbtn = QPushButton(self.tr('&Abort'))
         abortbtn.clicked.connect(self.stop)
         button_layout.addWidget(abortbtn)
         main_layout.addLayout(button_layout)

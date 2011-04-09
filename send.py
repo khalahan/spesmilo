@@ -92,7 +92,7 @@ class SendDialog(QDialog):
     def load_uri(self, uri):
         m = re.match(r'^bitcoin\:([1-9A-HJ-NP-Za-km-z]+)(?:\?(.*))?$', uri)
         if m is None:
-            raise RuntimeError('Invalid bitcoin URI')
+            raise RuntimeError(self.tr('Invalid bitcoin URI'))
         addr = m.group(1)
         query = m.group(2)
         param = {}

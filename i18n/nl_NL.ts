@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.0" language="nl_NL">
+<!DOCTYPE TS><TS version="1.1" language="nl_NL">
 <context>
     <name>Cashier</name>
     <message>
@@ -65,6 +64,16 @@
         <location filename="main.py" line="56"/>
         <source>Connecting...</source>
         <translation>Verbinden...</translation>
+    </message>
+    <message>
+        <location filename="main.py" line="45"/>
+        <source>&amp;Configure</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="main.py" line="49"/>
+        <source>&amp;Abort</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -147,36 +156,41 @@
         <source>Your send failed: %s</source>
         <translation>Fout bij versturen: %s</translation>
     </message>
+    <message>
+        <location filename="send.py" line="95"/>
+        <source>Invalid bitcoin URI</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SettingsDialog</name>
     <message>
-        <location filename="settings.py" line="236"/>
+        <location filename="settings.py" line="241"/>
         <source>&amp;OK</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="settings.py" line="241"/>
+        <location filename="settings.py" line="246"/>
         <source>&amp;Apply</source>
         <translation>&amp;Toepassen</translation>
     </message>
     <message>
-        <location filename="settings.py" line="246"/>
+        <location filename="settings.py" line="251"/>
         <source>&amp;Cancel</source>
         <translation>&amp;Annuleer</translation>
     </message>
     <message>
-        <location filename="settings.py" line="258"/>
+        <location filename="settings.py" line="263"/>
         <source>Settings</source>
         <translation>Opties</translation>
     </message>
     <message>
-        <location filename="settings.py" line="283"/>
+        <location filename="settings.py" line="288"/>
         <source>Restart required</source>
         <translation>Herstart vereist</translation>
     </message>
     <message>
-        <location filename="settings.py" line="283"/>
+        <location filename="settings.py" line="288"/>
         <source>Restarting Spesmilo is required for some changes to take effect.</source>
         <translation>Het herstarten van Spesmilo is vereist om de instellingen toe te passen.</translation>
     </message>
@@ -197,62 +211,62 @@
 <context>
     <name>SettingsTabLanguage</name>
     <message>
-        <location filename="settings.py" line="171"/>
+        <location filename="settings.py" line="172"/>
         <source>American</source>
         <translation>Amerikaans</translation>
     </message>
     <message>
-        <location filename="settings.py" line="172"/>
+        <location filename="settings.py" line="173"/>
         <source>English</source>
         <translation>Engels</translation>
     </message>
     <message>
-        <location filename="settings.py" line="173"/>
+        <location filename="settings.py" line="174"/>
         <source>Esperanto</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="settings.py" line="176"/>
+        <location filename="settings.py" line="181"/>
         <source>Language:</source>
         <translation>Taal:</translation>
     </message>
     <message>
-        <location filename="settings.py" line="181"/>
+        <location filename="settings.py" line="186"/>
         <source>Assume</source>
         <translation>Aannemen</translation>
     </message>
     <message>
-        <location filename="settings.py" line="182"/>
+        <location filename="settings.py" line="187"/>
         <source>Prefer</source>
         <translation>Voorkeur</translation>
     </message>
     <message>
-        <location filename="settings.py" line="183"/>
+        <location filename="settings.py" line="188"/>
         <source>Force</source>
         <translation>Forceer</translation>
     </message>
     <message>
-        <location filename="settings.py" line="188"/>
+        <location filename="settings.py" line="193"/>
         <source>Decimal</source>
         <translation>Decimaal</translation>
     </message>
     <message>
-        <location filename="settings.py" line="189"/>
+        <location filename="settings.py" line="194"/>
         <source>Tonal</source>
         <translation type="unfinished">Tonaal</translation>
     </message>
     <message>
-        <location filename="settings.py" line="192"/>
+        <location filename="settings.py" line="197"/>
         <source>Number system:</source>
         <translation>Talstelsel:</translation>
     </message>
     <message>
-        <location filename="settings.py" line="194"/>
+        <location filename="settings.py" line="199"/>
         <source>Hide preferred unit name</source>
         <translation>Verberg eenheid</translation>
     </message>
     <message>
-        <location filename="settings.py" line="174"/>
+        <location filename="settings.py" line="175"/>
         <source>Dutch</source>
         <translation>Nederlands</translation>
     </message>
