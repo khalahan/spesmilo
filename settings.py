@@ -174,6 +174,7 @@ class SettingsTabLanguage(SettingsTabBASE):
             (self.tr('English'), 'en_GB'),
             (self.tr('Esperanto'), 'eo_EO'),
             (self.tr('Dutch'), 'nl_NL'),
+            (self.tr('French'), 'fr_CA'),
         ]
         langlist.sort()
         for lang in langlist:
