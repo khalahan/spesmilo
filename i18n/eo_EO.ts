@@ -180,32 +180,32 @@
 <context>
     <name>SettingsDialog</name>
     <message>
-        <location filename="settings.py" line="251"/>
+        <location filename="settings.py" line="253"/>
         <source>&amp;Cancel</source>
         <translation>&amp;Nuligi</translation>
     </message>
     <message>
-        <location filename="settings.py" line="241"/>
+        <location filename="settings.py" line="243"/>
         <source>&amp;OK</source>
         <translation>&amp;Jes</translation>
     </message>
     <message>
-        <location filename="settings.py" line="246"/>
+        <location filename="settings.py" line="248"/>
         <source>&amp;Apply</source>
         <translation>&amp;Apliki</translation>
     </message>
     <message>
-        <location filename="settings.py" line="263"/>
+        <location filename="settings.py" line="265"/>
         <source>Settings</source>
         <translation>Prefereco</translation>
     </message>
     <message>
-        <location filename="settings.py" line="288"/>
+        <location filename="settings.py" line="290"/>
         <source>Restart required</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.py" line="288"/>
+        <location filename="settings.py" line="290"/>
         <source>Restarting Spesmilo is required for some changes to take effect.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -226,63 +226,73 @@
 <context>
     <name>SettingsTabLanguage</name>
     <message>
-        <location filename="settings.py" line="172"/>
+        <location filename="settings.py" line="173"/>
         <source>American</source>
         <translation>Usona</translation>
     </message>
     <message>
-        <location filename="settings.py" line="173"/>
+        <location filename="settings.py" line="174"/>
         <source>English</source>
         <translation>Angla</translation>
     </message>
     <message>
-        <location filename="settings.py" line="174"/>
+        <location filename="settings.py" line="175"/>
         <source>Esperanto</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="settings.py" line="181"/>
+        <location filename="settings.py" line="183"/>
         <source>Language:</source>
         <translation>Lingvo:</translation>
     </message>
     <message>
-        <location filename="settings.py" line="186"/>
+        <location filename="settings.py" line="188"/>
         <source>Assume</source>
         <translation>Kredi</translation>
     </message>
     <message>
-        <location filename="settings.py" line="187"/>
+        <location filename="settings.py" line="189"/>
         <source>Prefer</source>
         <translation>Preferi</translation>
     </message>
     <message>
-        <location filename="settings.py" line="188"/>
+        <location filename="settings.py" line="190"/>
         <source>Force</source>
         <translation>Ĉiam</translation>
     </message>
     <message>
-        <location filename="settings.py" line="193"/>
+        <location filename="settings.py" line="195"/>
         <source>Decimal</source>
         <translation>Dekuma</translation>
     </message>
     <message>
-        <location filename="settings.py" line="194"/>
+        <location filename="settings.py" line="196"/>
         <source>Tonal</source>
         <translation>Tonuma</translation>
     </message>
     <message>
-        <location filename="settings.py" line="197"/>
+        <location filename="settings.py" line="199"/>
         <source>Number system:</source>
         <translation>Nombrosistemo:</translation>
     </message>
     <message>
-        <location filename="settings.py" line="199"/>
+        <location filename="settings.py" line="201"/>
         <source>Hide preferred unit name</source>
         <translation>Kaŝi preferatan unitnomon</translation>
     </message>
     <message>
-        <location filename="settings.py" line="175"/>
+        <location filename="settings.py" line="176"/>
         <source>Dutch</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="settings.py" line="172"/>
+        <source>(Default)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="settings.py" line="177"/>
+        <source>French</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
