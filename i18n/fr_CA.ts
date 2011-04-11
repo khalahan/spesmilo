@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="1.1" language="fr_CA">
+<!DOCTYPE TS>
+<TS version="2.0" language="fr_CA">
 <context>
     <name>Cashier</name>
     <message>
@@ -129,7 +130,7 @@
     <message>
         <location filename="send.py" line="95"/>
         <source>Invalid bitcoin URI</source>
-        <translation type="unfinished"></translation>
+        <translation>URI Bitcoin invalide</translation>
     </message>
     <message>
         <location filename="send.py" line="152"/>
@@ -177,7 +178,7 @@
     <message>
         <location filename="settings.py" line="253"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished">&amp;Annuler</translation>
+        <translation>&amp;Annuler</translation>
     </message>
     <message>
         <location filename="settings.py" line="265"/>
@@ -213,7 +214,7 @@
     <message>
         <location filename="settings.py" line="172"/>
         <source>(Default)</source>
-        <translation type="unfinished"></translation>
+        <translation>(Par défaut)</translation>
     </message>
     <message>
         <location filename="settings.py" line="173"/>
@@ -238,7 +239,7 @@
     <message>
         <location filename="settings.py" line="177"/>
         <source>French</source>
-        <translation type="unfinished"></translation>
+        <translation>Français</translation>
     </message>
     <message>
         <location filename="settings.py" line="183"/>
@@ -268,7 +269,7 @@
     <message>
         <location filename="settings.py" line="196"/>
         <source>Tonal</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="settings.py" line="199"/>
@@ -336,12 +337,12 @@
     <message>
         <location filename="cashier.py" line="163"/>
         <source>Generated</source>
-        <translation>Généré</translation>
+        <translation>Générée</translation>
     </message>
     <message>
         <location filename="cashier.py" line="165"/>
         <source>Moved</source>
-        <translation>Déplacé</translation>
+        <translation>Déplacée</translation>
     </message>
 </context>
 <context>
@@ -367,7 +368,7 @@
     <message>
         <location filename="main.py" line="242"/>
         <source>Usage: %prog [options] [URI]</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="main.py" line="244"/>
@@ -387,7 +388,7 @@
     <message>
         <location filename="main.py" line="254"/>
         <source>Opens a dialog to send funds</source>
-        <translation>Ouvre un dialogue pour envoer des fonds</translation>
+        <translation>Ouvre un dialogue pour envoyer des fonds</translation>
     </message>
 </context>
 </TS>
