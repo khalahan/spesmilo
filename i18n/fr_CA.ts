@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="1.1" language="fr_CA">
+<!DOCTYPE TS>
+<TS version="2.0" language="fr_CA">
 <context>
     <name>Cashier</name>
     <message>
@@ -81,12 +82,12 @@
     <message>
         <location filename="core_interface.py" line="80"/>
         <source>Bitcoin does not support precision requested</source>
-        <translation type="unfinished"></translation>
+        <translation>Bitcoin ne supporte pas la précision demandé</translation>
     </message>
     <message>
         <location filename="core_interface.py" line="83"/>
         <source>This server does not support precision requested</source>
-        <translation type="unfinished"></translation>
+        <translation>Ce serveur ne supporte pas la précision demandé</translation>
     </message>
 </context>
 <context>
@@ -210,7 +211,7 @@
     <message>
         <location filename="settings.py" line="231"/>
         <source>Core</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Coeur</translation>
     </message>
     <message>
         <location filename="settings.py" line="232"/>
