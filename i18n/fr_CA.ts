@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.0" language="fr_CA">
+<!DOCTYPE TS><TS version="1.1" language="fr_CA">
 <context>
     <name>Cashier</name>
     <message>
@@ -78,9 +77,22 @@
     </message>
 </context>
 <context>
+    <name>CoreInterface</name>
+    <message>
+        <location filename="core_interface.py" line="80"/>
+        <source>Bitcoin does not support precision requested</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="core_interface.py" line="83"/>
+        <source>This server does not support precision requested</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>RootWindow</name>
     <message>
-        <location filename="main.py" line="186"/>
+        <location filename="main.py" line="187"/>
         <source>Error connecting</source>
         <translation>Erreur lors de la connection</translation>
     </message>
@@ -194,6 +206,16 @@
         <location filename="settings.py" line="290"/>
         <source>Restarting Spesmilo is required for some changes to take effect.</source>
         <translation>Vous devez redémarrer Spesmilo afin que les changements soient effectifs.</translation>
+    </message>
+    <message>
+        <location filename="settings.py" line="231"/>
+        <source>Core</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="settings.py" line="232"/>
+        <source>Language</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -364,29 +386,37 @@
     </message>
 </context>
 <context>
+    <name>_NotFancyURLopener</name>
+    <message>
+        <location filename="settings.py" line="448"/>
+        <source>Wrong or missing username/password</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>app</name>
     <message>
-        <location filename="main.py" line="242"/>
+        <location filename="main.py" line="243"/>
         <source>Usage: %prog [options] [URI]</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main.py" line="244"/>
+        <location filename="main.py" line="245"/>
         <source>Use this caption for the cashier window</source>
         <translation>Utilisé cette légende pour ouvrir la fenêtre du caissier</translation>
     </message>
     <message>
-        <location filename="main.py" line="250"/>
+        <location filename="main.py" line="251"/>
         <source>Opens an interactive Python prompt, and enables infinite in-RAM logging</source>
         <translation>Ouvre une invite interactive en Python et permet un connection in-ram infinie</translation>
     </message>
     <message>
-        <location filename="main.py" line="252"/>
+        <location filename="main.py" line="253"/>
         <source>Use this window icon</source>
         <translation>Utiliser cette icône de fenêtre</translation>
     </message>
     <message>
-        <location filename="main.py" line="254"/>
+        <location filename="main.py" line="255"/>
         <source>Opens a dialog to send funds</source>
         <translation>Ouvre un dialogue pour envoyer des fonds</translation>
     </message>
