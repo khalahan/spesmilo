@@ -228,8 +228,8 @@ class SettingsDialog(QDialog):
         tabw = QTabWidget()
         
         self.tabs = []
-        self.tabs.append(('Core', SettingsTabCore(self, self)))
-        self.tabs.append(('Language', SettingsTabLanguage(self, self)))
+        self.tabs.append((self.tr('Core'), SettingsTabCore(self, self)))
+        self.tabs.append((self.tr('Language'), SettingsTabLanguage(self, self)))
         
         for name, widget in self.tabs:
             tabw.addTab(widget, name)
@@ -445,7 +445,7 @@ humanToAmount = SpesmiloSettings.humanToAmount
 import urllib
 class _NotFancyURLopener(urllib.FancyURLopener):
     def prompt_user_passwd(self, host, realm):
-        raise NotImplementedError("Wrong or missing username/password")
+        raise NotImplementedError(self.tr("Wrong or missing username/password"))
 urllib._urlopener = _NotFancyURLopener()
 
 if __name__ == '__main__':

@@ -45,6 +45,9 @@ class CoreInterface:
             return int(round(n * 100000000))
         return int(n)
 
+    def tr(self, s):
+        return s
+
     def transactions(self, *args):
         txl = self._access().listtransactions(*args)
         for tx in txl:
@@ -74,10 +77,10 @@ class CoreInterface:
 
     def send(self, address, amount):
         if amount % 1:
-            raise ValueError('Bitcoin does not support precision requested')
+            raise ValueError(self.tr('Bitcoin does not support precision requested'))
         if self.rpcversion == 0:
             if amount % 1000000 and self._access().getinfo()['version'] < 32100:
-                raise ValueError('This server does not support precision requested')
+                raise ValueError(self.tr('This server does not support precision requested'))
             amount /= 100000000.
         return self.access.sendtoaddress(address, amount)
 

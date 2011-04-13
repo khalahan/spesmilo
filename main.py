@@ -153,6 +153,7 @@ class RootWindow(QMainWindow):
         self.state = self.CLIENT_NONE
         self.uri = SpesmiloSettings.getEffectiveURI()
         self.core = core_interface.CoreInterface(self.uri)
+        self.core.tr = lambda s: self.app.translate('CoreInterface', s)
         self.tray = TrayIcon(self.core, self)
 
         refresh_state_timer = QTimer(self)
