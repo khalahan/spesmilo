@@ -238,6 +238,9 @@ if __name__ == '__main__':
     import os
     import sys
     app = QApplication(sys.argv)
+    font = app.font()
+    font.setFamily(font.family() + ', tonal, Tonal (Luxi Mono)')
+    app.setFont(font)
     SpesmiloSettings.loadTranslator()
 
     argp = optparse.OptionParser(usage=app.tr('Usage: %prog [options] [URI]'))
