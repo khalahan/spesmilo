@@ -29,6 +29,8 @@ def icon(*ss):
         if not hasattr(icon, '_default'):
             icon._default = icon(*icon._defaultSearch)
         return icon._default
+    if len(ss) == 1:
+        ss += ('icons/%s.png' % (ss[0],),)
     for s in ss:
         if not s:
             continue

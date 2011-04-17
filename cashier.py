@@ -462,11 +462,11 @@ class Cashier(QDialog):
             self.tr('New address'), self,
             toolTip=self.tr('Create new address for accepting bitcoins'),
             triggered=self.new_address)
-        self.copyaddy_act = QAction(icon('copy-bitcoin-address', 'klipper', 'tool_clipboard', 'edit-copy'),
+        self.copyaddy_act = QAction(icon('copy-bitcoin-address', 'klipper', 'tool_clipboard', 'edit-copy', 'icons/edit-copy.png'),
             self.tr('Copy address'),
             self, toolTip=self.tr('Copy address to clipboard'),
             triggered=self.copy_address)
-        self.settings_act = QAction(icon('configure'),
+        self.settings_act = QAction(icon('configure', 'icons/preferences-system.png'),
             self.tr('Settings'),
             self, toolTip=self.tr('Configure Spesmilo'),
             triggered=self.open_settings)

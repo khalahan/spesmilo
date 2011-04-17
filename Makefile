@@ -7,22 +7,26 @@ ICONDIR := $(DATADIR)/icons/hicolor
 XDGDATADIR := $(DATADIR)
 XDGAPPDIR := $(XDGDATADIR)/applications
 KDESERVICEDIR := 
+DISABLE_FALLBACK_ICONS := 
 
 DESTDIR := 
 
 INSTALL := install -v
 PYTHON := python
 PYTHON_O := $(PYTHON) -OO -m py_compile
-IMGCONVERT := convert
+IMGCONVERT := convert -background none
 
 qm = $(patsubst %.ts,%.qm,$(wildcard i18n/*.ts))
 pyo = $(patsubst %.py,%.pyo,$(wildcard *.py jsonrpc/*.py))
 exescript = $(APP).exescript
 icon = icons/bitcoin32.png
+ifeq ($(DISABLE_FALLBACK_ICONS),)
+	fallback_icons = $(patsubst %.svg,%.png,$(wildcard icons/*.svg))
+endif
 
 GIT_POC = if [ -e $(2) ]; then ( cd $(2) && git pull; ); else git clone $(1) $(2); $(3); fi
 
-all: $(APP) $(qm) $(pyo) $(icon)
+all: $(APP) $(qm) $(pyo) $(icon) $(fallback_icons)
 
 %.qm: %.ts
 	lrelease $<
@@ -33,6 +37,9 @@ lang: $(qm)
 	$(PYTHON_O) $<
 
 pyo: $(pyo)
+
+%.xpm: %.svg
+	$(IMGCONVERT) $< $@
 
 %.png: %.xpm
 	$(IMGCONVERT) $< $@
@@ -57,15 +64,18 @@ local:
 		ln -s anynumber.py lib/anynumber/__init__.py)
 
 clean:
-	rm -vf $(qm) $(pyo) $(APP) $(exescript)
+	rm -vf $(qm) $(pyo) $(APP) $(exescript) $(icon) $(fallback_icons)
 
-install: $(qm) $(pyo) exescript $(icon)
+install: $(qm) $(pyo) exescript $(icon) $(fallback_icons)
 	$(INSTALL) -d "$(DESTDIR)/$(LIBEXECDIR)"
 	for pyo in $(pyo); do \
 		$(INSTALL) -D "$$pyo" "$(DESTDIR)/$(LIBEXECDIR)/$$pyo"; \
 	done
 	$(INSTALL) -d "$(DESTDIR)/$(ICONDIR)/32x32/apps"
 	$(INSTALL) "$(icon)" "$(DESTDIR)/$(ICONDIR)/32x32/apps/bitcoin.png"
+	for xicon in $(fallback_icons); do \
+		$(INSTALL) -D "$$xicon" "$(DESTDIR)/$(LIBEXECDIR)/$$xicon"; \
+	done
 	$(INSTALL) -d "$(DESTDIR)/$(BINDIR)"
 	$(INSTALL) --mode=0755 "$(exescript)" "$(DESTDIR)/$(BINDIR)/$(APP)"
 	$(INSTALL) -d "$(DESTDIR)/$(XDGAPPDIR)"
