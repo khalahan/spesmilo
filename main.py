@@ -256,6 +256,11 @@ if __name__ == '__main__':
                     help=app.tr('Opens a dialog to send funds'))
 
     args = app.arguments()
+    # Workaround PySide/Windows bug
+    if sys.argv[0] in args:
+        i = args.index(sys.argv[0])
+        if i:
+            args[0:i] = ()
     # Workaround KDE bug
     if '-icon' in args:
         args[args.index('-icon')] = '--icon'
