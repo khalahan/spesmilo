@@ -470,7 +470,7 @@ class Cashier(QDialog):
                         debuglog += ["Tx %s (row %d) has %d confirms" % (etxid, row, confirms)]
                         if category in ('generate', 'immature'):
                             status_item.category = category
-                        else:
+                        elif hasattr(status_item, 'category'):
                             del status_item.category
                         self.transactions_table.update_confirmation(row, confirms, adjustment=False)
                         if self.confirmation_stage(category, confirms) < 0x100:
