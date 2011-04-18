@@ -163,6 +163,8 @@ class TransactionsTable(QTableWidget):
             description = self.tr('Generated')
         elif category == 'move':
             description = self.tr('Moved')
+        else:
+            description = self.tr('Unknown')
         trans_item = TransactionItem(description)
         self.setItem(0, 2, trans_item)
 
