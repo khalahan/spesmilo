@@ -161,7 +161,7 @@ class TransactionsTable(QTableWidget):
             description = self.tr('Sent to %s')%address
         elif category == 'receive':
             description = self.tr('Received to %s')%address
-        elif category == 'generate' or category == 'immature':
+        elif category in ('generate', 'immature'):
             description = self.tr('Generated')
             status_item.category = category
         elif category == 'move':
@@ -468,7 +468,10 @@ class Cashier(QDialog):
                         self.transactions_table.removeRow(row)
                     else:
                         debuglog += ["Tx %s (row %d) has %d confirms" % (etxid, row, confirms)]
-                        status_item.category = category
+                        if category in ('generate', 'immature'):
+                            status_item.category = category
+                        else:
+                            del status_item.category
                         self.transactions_table.update_confirmation(row, confirms, adjustment=False)
                         if self.confirmation_stage(category, confirms) < 0x100:
                             txdone = False
