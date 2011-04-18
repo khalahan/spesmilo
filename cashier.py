@@ -95,8 +95,9 @@ class TransactionsTable(QTableWidget):
         confirms = status_item.confirmations
         if confirms is None:
             return
+        category = status_item.category if hasattr(status_item, 'category') else None
         if adjustment:
-            if confirms < self.final_confirmation:
+            if self.confirmation_stage(category, confirms) < 0x100:
                 return
             confirms = confirms + increment
         else:
@@ -105,9 +106,10 @@ class TransactionsTable(QTableWidget):
             confirms = increment
 
         row_disabled = False
-        if confirms >= self.final_confirmation:
+        stage = self.confirmation_stage(category, confirms)
+        if stage == 0x100:
             status = self.tr('Confirmed (%s)')
-        elif confirms > 1:
+        elif stage:
             status = self.tr('Processing... (%s)')
         else:
             status = self.tr('Validating... (%s)')
@@ -159,8 +161,9 @@ class TransactionsTable(QTableWidget):
             description = self.tr('Sent to %s')%address
         elif category == 'receive':
             description = self.tr('Received to %s')%address
-        elif category == 'generate':
+        elif category == 'generate' or category == 'immature':
             description = self.tr('Generated')
+            status_item.category = category
         elif category == 'move':
             description = self.tr('Moved')
         else:
@@ -284,11 +287,11 @@ class Cashier(QDialog):
         self.setWindowTitle(caption)
         self.setAttribute(Qt.WA_DeleteOnClose, False)
 
-        self.transactions_table.final_confirmation = 6
         self.txload_initial = 0x1000
         self.txload_poll = 8
         self.txload_waste = 8
         self._refresh_transactions_debug = []
+        self.transactions_table.confirmation_stage = self.confirmation_stage
 
         refresh_info_timer = QTimer(self)
         refresh_info_timer.timeout.connect(self.refresh_info)
@@ -306,6 +309,21 @@ class Cashier(QDialog):
 
         self.resize(640, 420)
 
+    def confirmation_stage(self, category, confirms):
+        sch = self.confirmation_stage.sch
+        if category not in sch:
+            category = None
+        sch = sch[category]
+        if confirms < sch[0]:
+            return 0
+        if sch[1] is None or confirms < sch[1]:
+            return 0x80
+        return 0x100
+    confirmation_stage.sch = {}
+    confirmation_stage.sch[None] = (2, 6)
+    confirmation_stage.sch['generate'] = (100, 120)
+    confirmation_stage.sch['immature'] = (100, None)
+
     def refresh_info(self):
         self.refresh_balance()
         self.refresh_transactions()
@@ -313,6 +331,8 @@ class Cashier(QDialog):
     def __etxid(self, t):
         txid = t['txid']
         category = t['category']
+        if category == 'immature':
+            category = 'generate'
         etxid = "%s/%s" % (txid, category)
         return etxid
 
@@ -362,9 +382,10 @@ class Cashier(QDialog):
                 if 'txid' not in t:
                     continue
                 txid = t['txid'] if 'txid' in t else False
+                category = t['category']
                 if 'confirmations' in t:
                     confirms = t['confirmations']
-                    if nltwc is None and confirms >= self.transactions_table.final_confirmation:
+                    if nltwc is None and self.confirmation_stage(category, confirms) == 0x100:
                         nltwc = t
                         debuglog += ["New last_tx_with_confirmations = %s" % (txid,)]
                     if txid == self.last_tx_with_confirmations:
@@ -383,6 +404,8 @@ class Cashier(QDialog):
                     nomore = True
                     if i >= self.txload_poll:
                         self.txload_poll = i + 1
+                    continue
+                if category == 'orphan':
                     continue
                 otl.append(t)
             transactions = otl
@@ -416,7 +439,9 @@ class Cashier(QDialog):
 
                 status_item = self.transactions_table.add_transaction_entry(t)
                 if 'confirmations' not in t: continue
-                if t['confirmations'] < self.transactions_table.final_confirmation:
+                category = t['category']
+                confirms = t['confirmations']
+                if self.confirmation_stage(category, confirms) < 0x100:
                     self.unconfirmed_tx.insert(0, (etxid, status_item) )
                     debuglog += ["New unconfirmed tx: %s" % (etxid,)]
             self.last_tx = transactions[-1]['txid']
@@ -432,14 +457,23 @@ class Cashier(QDialog):
             for t in transactions:
                 etxid = self.__etxid(t)
                 if etxid in utx:
+                    category = t['category']
                     confirms = t['confirmations']
+                    txdone = True
                     status_item = utx[etxid][0]
                     # NOTE: the row may have changed since the start of the function, so don't try to cache it from above
                     row = self.transactions_table.row(status_item)
-                    debuglog += ["Tx %s (row %d) has %d confirms" % (etxid, row, confirms)]
-                    self.transactions_table.update_confirmation(row, confirms, adjustment=False)
+                    if category == 'orphan':
+                        debuglog += ["Tx %s (row %d) has been orphaned" % (etxid, row, confirms)]
+                        self.transactions_table.removeRow(row)
+                    else:
+                        debuglog += ["Tx %s (row %d) has %d confirms" % (etxid, row, confirms)]
+                        status_item.category = category
+                        self.transactions_table.update_confirmation(row, confirms, adjustment=False)
+                        if self.confirmation_stage(category, confirms) < 0x100:
+                            txdone = False
                     del utx[etxid]
-                    if confirms >= self.transactions_table.final_confirmation:
+                    if txdone:
                         for i in xrange(len(self.unconfirmed_tx)):
                             if self.unconfirmed_tx[i][0] == etxid:
                                 self.unconfirmed_tx[i:i+1] = ()
