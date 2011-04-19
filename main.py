@@ -168,6 +168,7 @@ class RootWindow(QMainWindow):
     def config(self):
         self.stop(doQuit=False)
         sd = SettingsDialog(self)
+        self.tray.current_window = sd
         sd.accepted.connect(lambda: _startup(self))
         sd.rejected.connect(lambda: qApp.quit())
 
