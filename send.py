@@ -21,10 +21,13 @@ from PySide.QtGui import *
 from PySide.QtWebKit import *
 from settings import humanAmount, humanToAmount, SpesmiloSettings
 
+_windows = {}
+
 class SendDialog(QDialog):
     def __init__(self, core = None, parent = None, uri = None, autostart = True):
         super(SendDialog, self).__init__(parent)
         self.core = core
+        _windows[id(self)] = self
         
         formlay = QFormLayout()
         self.destaddy = QLineEdit()
@@ -179,6 +182,14 @@ class SendDialog(QDialog):
             self.reject()
             return
         self.accept()
+
+    def accept(self):
+        del _windows[id(self)]
+        QDialog.accept(self)
+
+    def reject(self):
+        del _windows[id(self)]
+        QDialog.reject(self)
 
 if __name__ == '__main__':
     import os

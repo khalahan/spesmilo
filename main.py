@@ -26,6 +26,11 @@ import cashier
 import send
 from settings import SpesmiloSettings, SettingsDialog, icon, quietPopen
 
+def receive_uri(w, uri):
+    import send
+    sw = send.SendDialog(w.core, w.parent(), uri=uri)
+    sw.setFocus()
+
 def _startup(rootwindow, *args, **kwargs):
     if SpesmiloSettings.useInternalCore():
         import os
@@ -35,6 +40,11 @@ def _startup(rootwindow, *args, **kwargs):
             options = args[0]
             cmd += options.bitcoind
         quietPopen(cmd)
+        import ipc
+        ipcsrv = ipc.ipc_handler('Bitcoin')
+        ipcsrv.have_uri.connect(lambda x: receive_uri(rootwindow, x), Qt.QueuedConnection)
+        ipcsrv.start()
+        rootwindow.ipcsrv = ipcsrv
     rootwindow.start(*args, **kwargs)
 
 class ConnectingDialog(QDialog):
@@ -230,6 +240,11 @@ class RootWindow(QMainWindow):
             raise
         finally:
             self.core = None
+            if hasattr(self, 'ipcsrv'):
+                try:
+                    self.ipcsrv.stop()
+                except:
+                    pass
             if doQuit:
                 qApp.quit()
 
@@ -302,6 +317,13 @@ if __name__ == '__main__':
     args[0:1] = ()
 
     if args or options.send:
+        if SpesmiloSettings.useInternalCore():
+            try:
+                import ipc
+                ipc.ipc_send('Bitcoin', args[0] if args else 'bitcoin:')
+                exit(0)
+            except Exception:
+                pass
         rootwindow = send.SendDialog(autostart=False)
     else:
         app.setQuitOnLastWindowClosed(False)
