@@ -15,6 +15,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import socket
+
 from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide.QtNetwork import *
@@ -214,6 +216,8 @@ class RootWindow(QMainWindow):
                         self.core.stop()
                     except core_interface.JSONRPCException:
                         pass
+                    except socket.error:
+                        break
                     except:
                         raise
                     else:
