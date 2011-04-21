@@ -247,6 +247,10 @@ if __name__ == '__main__':
     import optparse
     import os
     import sys
+
+    if hasattr(sys, 'frozen') and sys.frozen == "windows_exe":
+        sys.stderr = sys.stdout
+
     app = QApplication(sys.argv)
     font = app.font()
     font.setFamily(font.family() + ', tonal, Tonal (Luxi Mono)')
