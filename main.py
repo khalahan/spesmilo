@@ -17,6 +17,7 @@
 
 from PySide.QtCore import *
 from PySide.QtGui import *
+from PySide.QtNetwork import *
 from PySide.QtWebKit import *
 import core_interface
 import cashier
