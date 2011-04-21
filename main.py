@@ -31,6 +31,9 @@ def _startup(rootwindow, *args, **kwargs):
         import os
         user, passwd, port = SpesmiloSettings.getInternalCoreAuth()
         cmd = ('bitcoind', '-rpcuser=%s' % (user,), '-rpcpassword=%s' % (passwd,), '-rpcallowip=127.0.0.1', '-rpcport=%d' % (port,))
+        if len(args):
+            options = args[0]
+            cmd += options.bitcoind
         quietPopen(cmd)
     rootwindow.start(*args, **kwargs)
 
@@ -244,6 +247,18 @@ def _RunCLI():
     threading.Timer(0, CLI).start()
 
 if __name__ == '__main__':
+    def vararg_callback(option, opt_str, value, parser):
+        assert value is None
+        value = []
+
+        for arg in parser.rargs:
+            if arg == '--':
+                break
+            value.append(arg)
+
+        del parser.rargs[:len(value) + 1]
+        setattr(parser.values, option.dest, tuple(value))
+
     import optparse
     import os
     import sys
@@ -271,6 +286,8 @@ if __name__ == '__main__':
                     help=app.tr('Use this window icon'))
     argp.add_option('--send', dest='send', action='store_true', default=False,
                     help=app.tr('Opens a dialog to send funds'))
+    argp.add_option('--bitcoind', dest='bitcoind', action='callback', callback=vararg_callback, default=(),
+                    help=app.tr('Pass remaining arguments to bitcoind (internal core only)'))
 
     args = app.arguments()
     # Workaround PySide/Windows bug
