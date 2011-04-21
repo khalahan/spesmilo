@@ -7,3 +7,4 @@ for d in ('i18n', 'icons'):
 	shutil.copytree(d, 'dist/%s' % (d,))
 for f in ('bitcoind.exe', 'libeay32.dll'):
 	shutil.copy(f, 'dist/%s' % (f,))
+shutil.move('dist/main.exe', 'dist/spesmilo.exe')
