@@ -22,13 +22,14 @@ from PySide.QtWebKit import *
 import core_interface
 import cashier
 import send
-from settings import SpesmiloSettings, SettingsDialog, icon
+from settings import SpesmiloSettings, SettingsDialog, icon, quietPopen
 
 def _startup(rootwindow, *args, **kwargs):
     if SpesmiloSettings.useInternalCore():
         import os
         user, passwd, port = SpesmiloSettings.getInternalCoreAuth()
-        os.system(' '.join(('bitcoind', '-rpcuser=%s' % (user,), '-rpcpassword=%s' % (passwd,), '-rpcallowip=127.0.0.1', '-rpcport=%d' % (port,))))
+        cmd = ('bitcoind', '-rpcuser=%s' % (user,), '-rpcpassword=%s' % (passwd,), '-rpcallowip=127.0.0.1', '-rpcport=%d' % (port,))
+        quietPopen(cmd)
     rootwindow.start(*args, **kwargs)
 
 class ConnectingDialog(QDialog):

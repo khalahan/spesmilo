@@ -17,6 +17,7 @@
 from decimal import Decimal
 import os
 import re
+import subprocess
 from PySide.QtCore import *
 from PySide.QtGui import *
 
@@ -40,6 +41,19 @@ def icon(*ss):
             return QIcon.fromTheme(s)
     return QIcon()
 icon._defaultSearch = ('spesmilo', 'bitcoin', 'icons/bitcoin32.xpm')
+
+def quietPopen(*args, **kwargs):
+    if 'startupinfo' not in kwargs and hasattr(subprocess, 'STARTUPINFO'):
+        kwargs['startupinfo'] = subprocess.STARTUPINFO()
+    if 'startupinfo' in kwargs:
+        kwargs['startupinfo'].dwFlags |= subprocess.STARTF_USESHOWWINDOW if hasattr(subprocess, 'STARTF_USESHOWWINDOW') else 1
+    try:
+        return subprocess.Popen(*args, **kwargs)
+    except:
+        class dummy:
+            def wait(self):
+                return -1
+        return dummy()
 
 class SettingsTabBASE(QWidget):
     def __init__(self, parent = None, dlg = None):
@@ -153,7 +167,7 @@ class SettingsTabCore(SettingsTabBASE):
         mainlay.addLayout(lelay)
     
     def checkSettings(self):
-        if os.system('bitcoind --help'):
+        if quietPopen( ('bitcoind', '--help') ).wait():
             self.cbInternal.setChecked(False)
             self.cbInternal.setEnabled(False)
             self.lblInternal.setEnabled(False)
