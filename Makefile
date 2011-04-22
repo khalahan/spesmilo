@@ -44,6 +44,9 @@ pyo: $(pyo)
 %.png: %.xpm
 	$(IMGCONVERT) $< $@
 
+%.ico: %.xpm
+	$(IMGCONVERT) $< $@
+
 $(APP):
 	make exescript exescript="$@" LIBEXECDIR=.
 	chmod +x $@
@@ -62,6 +65,8 @@ local:
 	$(call GIT_POC, \
 		git://gitorious.org/anynumber/python.git, lib/anynumber, \
 		ln -s anynumber.py lib/anynumber/__init__.py)
+
+winprep: all icons/bitcoin32.ico icons/go-next.ico
 
 clean:
 	rm -vf $(qm) $(pyo) $(APP) $(exescript) $(icon) $(fallback_icons)

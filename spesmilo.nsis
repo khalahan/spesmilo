@@ -1,0 +1,260 @@
+; NOTE: Before this works, you need to 'make winprep', and 'build_win32_dist.py'
+
+!define APPNAME  "Spesmilo"
+!define VERSION  "0.0.1"
+!define APPTITLE "Spesmilo"
+!define TARGETCPU "i386"
+!define TARGETOS "windows"
+
+!define SF_SELECTED	"1"
+
+SetCompressor lzma
+
+Name "${APPTITLE}"
+
+; The file to write
+OutFile "${APPNAME}_${VERSION}_${TARGETCPU}_${TARGETOS}.exe"
+
+; The default installation directory
+InstallDir "$PROGRAMFILES\${APPNAME}"
+
+; Registry key to check for directory (so if you install again, it will 
+; overwrite the old one automatically)
+InstallDirRegKey HKLM "Software\${APPNAME}" "Install_Dir"
+
+;--------------------------------
+
+; Pages
+
+Page components
+Page directory
+Page instfiles
+
+UninstPage uninstConfirm
+UninstPage instfiles
+
+;--------------------------------
+
+InstType "Remote"
+InstType "Local"
+
+; The stuff to install
+Section "Spesmilo"
+	SectionIn RO
+	
+	; Set output path to the installation directory.
+	SetOutPath $INSTDIR
+	
+	; Put file there
+	File "dist\spesmilo.exe"
+	
+	; Shared Libraries
+	File "dist\PySide.QtCore.pyd"
+	File "dist\PySide.QtGui.pyd"
+	File "dist\PySide.QtNetwork.pyd"
+	File "dist\PySide.QtWebKit.pyd"
+	File "dist\QtCore4.dll"
+	File "dist\QtGui4.dll"
+	File "dist\QtNetwork4.dll"
+	File "dist\QtWebKit4.dll"
+	File "dist\_ctypes.pyd"
+	File "dist\_hashlib.pyd"
+	File "dist\_socket.pyd"
+	File "dist\_ssl.pyd"
+	File "dist\bz2.pyd"
+	File "dist\library.zip"
+	File "dist\phonon4.dll"
+	File "dist\pyexpat.pyd"
+	File "dist\pyside-python2.7.dll"
+	File "dist\python27.dll"
+	File "dist\select.pyd"
+	File "dist\shiboken-python2.7.dll"
+	File "dist\unicodedata.pyd"
+	File "dist\w9xpopen.exe"
+	File "dist\_multiprocessing.pyd"
+	
+	; License
+	File /oname=COPYING.txt "COPYING"
+	
+	; Icons
+	SetOutPath "$INSTDIR\icons"
+	File "icons\bitcoin32.png"
+	File "icons\document-new.png"
+	File "icons\edit-copy.png"
+	File "icons\go-next.png"
+	File "icons\preferences-system.png"
+	
+	; Write the installation path into the registry
+	WriteRegStr HKLM "SOFTWARE\${APPNAME}" "Install_Dir" "$INSTDIR"
+	
+	; Write the uninstall keys for Windows
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "DisplayName" "${APPTITLE} ${VERSION}"
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "UninstallString" '"$INSTDIR\uninstall.exe"'
+	WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "NoModify" 1
+	WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "NoRepair" 1
+	WriteUninstaller "uninstall.exe"
+SectionEnd
+
+Section "Internal Core"
+	SectionIn 2
+	SetOutPath $INSTDIR
+	File "bitcoind.exe" 
+	File "libeay32.dll"
+SectionEnd
+
+SectionGroup /e "Languages"
+	Section /o "Dutch"
+		SetOutPath $INSTDIR\i18n
+		File "i18n\nl_NL.qm"
+	SectionEnd
+	
+	Section "English"
+		SectionIn 1 2
+		SetOutPath $INSTDIR\i18n
+		File "i18n\en_GB.qm"
+	SectionEnd
+	
+	Section /o "Esperanto"
+		SetOutPath $INSTDIR\i18n
+		File "i18n\eo_EO.qm"
+	SectionEnd
+	
+	Section /o "French"
+		SetOutPath $INSTDIR\i18n
+		File "i18n\fr_CA.qm"
+	SectionEnd
+SectionGroupEnd
+
+SectionGroup /e "Shortcuts"
+	Section "Start Menu" ShortcutsStartmenu
+		SectionIn 1 2
+		SetOutPath $INSTDIR\icons
+		File "icons\bitcoin32.ico"
+		File "icons\go-next.ico"
+		CreateDirectory "$SMPROGRAMS\${APPTITLE}"
+		CreateShortCut "$SMPROGRAMS\${APPTITLE}\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
+		CreateShortCut "$SMPROGRAMS\${APPTITLE}\${APPTITLE}.lnk" "$INSTDIR\spesmilo.exe" "" "$INSTDIR\icons\bitcoin32.ico" 0
+		CreateShortCut "$SMPROGRAMS\${APPTITLE}\Send Bitcoins.lnk" "$INSTDIR\spesmilo.exe" "--send" "$INSTDIR\icons\go-next.ico" 0
+		CreateShortCut "$SMPROGRAMS\${APPTITLE}\Copying License.lnk" "$INSTDIR\COPYING.txt" "" "$INSTDIR\COPYING.txt" 0
+	SectionEnd
+	
+	Section "Quick Launch Send"
+		SectionIn 1 2
+		CreateShortCut "$QUICKLAUNCH\Send Bitcoins.lnk" "$INSTDIR\spesmilo.exe" "--send" "$INSTDIR\icons\bitcoin32.png" 0
+	SectionEnd
+SectionGroupEnd
+
+Section "bitcoin: URI handler"
+	SectionIn 1 2
+	WriteRegStr HKCR "bitcoin" "" "URL:Bitcoin Protocol"
+	WriteRegStr HKCR "bitcoin" "URL Protocol" ""
+	WriteRegStr HKCR "bitcoin\DefaultIcon" "" "$INSTDIR\icons\bitcoin32.png,1"
+	WriteRegStr HKCR "bitcoin\shell\open\command" "" "$\"$INSTDIR\spesmilo.exe$\" $\"%1$\""
+SectionEnd
+
+Section /o "Source Code"
+	SetOutPath "$INSTDIR\Source"
+	File ".gitignore"
+	File "COPYING"
+	File "Makefile"
+	File "README"
+	File "bitcoin.patch"
+	File "build_win32_dist.py"
+	File "cashier.py"
+	File "core_interface.py"
+	File "ipc.py"
+	File "kalam.pro"
+	File "main.py"
+	File "send.py"
+	File "settings.py"
+	File "spesmilo.desktop"
+	File "spesmilo.protocol"
+	File "spesmilo.nsis"
+	SetOutPath "$INSTDIR\Source\i18n"
+	File "i18n\en_GB.ts"
+	File "i18n\eo_EO.ts"
+	File "i18n\fr_CA.ts"
+	File "i18n\nl_NL.ts"
+	SetOutPath "$INSTDIR\Source\icons"
+	File "icons\bitcoin32.xpm"
+	File "icons\document-new.svg"
+	File "icons\edit-copy.svg"
+	File "icons\go-next.svg"
+	File "icons\preferences-system.svg"
+	
+	SectionGetFlags ${ShortcutsStartmenu} $0
+	IntOp $0 $0 & ${SF_SELECTED}
+	IntCmp $0 ${SF_SELECTED} srcShortcut noSrcShortcut
+	
+	srcShortcut:
+		CreateShortCut "$SMPROGRAMS\${APPTITLE}\Source Code.lnk" "$INSTDIR\Source" "" "$INSTDIR\Source" 0
+	
+	noSrcShortcut:
+SectionEnd
+
+;--------------------------------
+
+; Uninstaller
+
+Section "Uninstall"
+	; Remove registry keys
+	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}"
+	DeleteRegKey HKLM "SOFTWARE\${APPNAME}"
+	; FIXME: Make sure this app is still the registered handler!
+	DeleteRegKey HKCR "bitcoin"
+	
+	; perl -nle 's/^\s*File\s+(?:\/oname=(\S+)\s+)?"(?:dist\/)?(.*)"/"\tDelete \"\$INSTDIR\/".($1||$2)."\""/e&&print' < spesmilo.nsi
+	Delete "$INSTDIR\spesmilo.exe"
+	Delete "$INSTDIR\PySide.QtCore.pyd"
+	Delete "$INSTDIR\PySide.QtGui.pyd"
+	Delete "$INSTDIR\PySide.QtNetwork.pyd"
+	Delete "$INSTDIR\PySide.QtWebKit.pyd"
+	Delete "$INSTDIR\QtCore4.dll"
+	Delete "$INSTDIR\QtGui4.dll"
+	Delete "$INSTDIR\QtNetwork4.dll"
+	Delete "$INSTDIR\QtWebKit4.dll"
+	Delete "$INSTDIR\_ctypes.pyd"
+	Delete "$INSTDIR\_hashlib.pyd"
+	Delete "$INSTDIR\_socket.pyd"
+	Delete "$INSTDIR\_ssl.pyd"
+	Delete "$INSTDIR\bz2.pyd"
+	Delete "$INSTDIR\library.zip"
+	Delete "$INSTDIR\phonon4.dll"
+	Delete "$INSTDIR\pyexpat.pyd"
+	Delete "$INSTDIR\pyside-python2.7.dll"
+	Delete "$INSTDIR\python27.dll"
+	Delete "$INSTDIR\select.pyd"
+	Delete "$INSTDIR\shiboken-python2.7.dll"
+	Delete "$INSTDIR\unicodedata.pyd"
+	Delete "$INSTDIR\COPYING.txt"
+	Delete "$INSTDIR\icons\bitcoin32.png"
+	Delete "$INSTDIR\icons\document-new.png"
+	Delete "$INSTDIR\icons\edit-copy.png"
+	Delete "$INSTDIR\icons\go-next.png"
+	Delete "$INSTDIR\icons\preferences-system.png"
+	Delete "$INSTDIR\icons\bitcoin32.ico"
+	Delete "$INSTDIR\icons\go-next.ico"
+	Delete "$INSTDIR\bitcoind.exe" 
+	Delete "$INSTDIR\w9xpopen.exe"
+	Delete "$INSTDIR\_multiprocessing.pyd"
+	Delete "$INSTDIR\libeay32.dll"
+	Delete "$INSTDIR\i18n\nl_NL.qm"
+	Delete "$INSTDIR\i18n\en_GB.qm"
+	Delete "$INSTDIR\i18n\eo_EO.qm"
+	Delete "$INSTDIR\i18n\fr_CA.qm"
+	
+	Delete $INSTDIR\uninstall.exe
+	
+	; Remove shortcuts, if any
+	Delete "$SMPROGRAMS\${APPTITLE}\Uninstall.lnk"
+	Delete "$SMPROGRAMS\${APPTITLE}\${APPTITLE}.lnk"
+	Delete "$SMPROGRAMS\${APPTITLE}\Send Bitcoins.lnk"
+	Delete "$SMPROGRAMS\${APPTITLE}\Copying License.lnk"
+	Delete "$QUICKLAUNCH\Send Bitcoins.lnk"
+	
+	; Remove directories used
+	RMDir "$SMPROGRAMS\${APPTITLE}"
+	RMDir "$INSTDIR\i18n"
+	RMDir "$INSTDIR\icons"
+	RMDir "$INSTDIR"
+SectionEnd
