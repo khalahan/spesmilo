@@ -128,6 +128,7 @@ SectionGroup /e "Shortcuts"
 		SetOutPath $INSTDIR\icons
 		File "icons\bitcoin32.ico"
 		File "icons\go-next.ico"
+		SetOutPath $INSTDIR
 		CreateDirectory "$SMPROGRAMS\${APPTITLE}"
 		CreateShortCut "$SMPROGRAMS\${APPTITLE}\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
 		CreateShortCut "$SMPROGRAMS\${APPTITLE}\${APPTITLE}.lnk" "$INSTDIR\spesmilo.exe" "" "$INSTDIR\icons\bitcoin32.ico" 0
@@ -137,6 +138,7 @@ SectionGroup /e "Shortcuts"
 	
 	Section "Quick Launch Send"
 		SectionIn 1 2
+		SetOutPath $INSTDIR
 		CreateShortCut "$QUICKLAUNCH\Send Bitcoins.lnk" "$INSTDIR\spesmilo.exe" "--send" "$INSTDIR\icons\bitcoin32.png" 0
 	SectionEnd
 SectionGroupEnd
