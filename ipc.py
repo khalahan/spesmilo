@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import sys
 from PySide.QtCore import *
 
 class ipc_handler(QThread):
@@ -7,6 +8,8 @@ class ipc_handler(QThread):
     def __init__(self, addr, *args, **kwargs):
         QThread.__init__(self, *args, **kwargs)
         self.setTerminationEnabled(True)
+        if sys.platform == 'win32':
+            addr = r'\\.\pipe\%s' % (addr,)
         self._addr = addr
 
     def run(self):
