@@ -460,6 +460,10 @@ humanToAmount = SpesmiloSettings.humanToAmount
 
 import urllib
 class _NotFancyURLopener(urllib.FancyURLopener):
+    def tr(self, s):
+        from PySide.QtGui import qApp
+        return qApp.translate('_NotFancyURLopener', s)
+
     def prompt_user_passwd(self, host, realm):
         raise NotImplementedError(self.tr("Wrong or missing username/password"))
 urllib._urlopener = _NotFancyURLopener()
