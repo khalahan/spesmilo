@@ -194,6 +194,8 @@ class SettingsTabLanguage(SettingsTabBASE):
         ]
         langlist.sort()
         for lang in langlist:
+            if not (lang[1] in ('', 'en_US') or os.path.exists("i18n/%s.qm" % (lang[1],))):
+                continue
             self.lang.addItem(*lang)
         self.options.append(self.lang)
         mainlay.addRow(self.tr('Language:'), self.lang)
