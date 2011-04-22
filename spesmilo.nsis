@@ -1,7 +1,7 @@
 ; NOTE: Before this works, you need to 'make winprep', and 'build_win32_dist.py'
 
 !define APPNAME  "Spesmilo"
-!define VERSION  "0.0.1"
+!define VERSION  "0.0.1.beta1"
 !define APPTITLE "Spesmilo"
 !define TARGETCPU "i386"
 !define TARGETOS "windows"
