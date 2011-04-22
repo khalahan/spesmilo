@@ -350,8 +350,10 @@ class SpesmiloSettings:
     def _toBTC(self, n, addSign = False, wantTLA = None, wantDelimiters = False):
         n = anynumber.Decimal(n) / 100000000
         s = n.format(addSign=addSign, wantDelimiters=wantDelimiters)
-        if ('  ' + s)[-3] != '.':
-            s += '0' if (' ' + s)[-2] == '.' else '.00'
+        if '.' not in s:
+            s += '.00'
+        elif s[-2] == '.':
+            s += '0'
         if wantTLA is None:
             wantTLA = not self.getHideUnitTLA()
         if wantTLA:
