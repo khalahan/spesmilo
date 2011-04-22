@@ -40,7 +40,7 @@ def icon(*ss):
         if QIcon.hasThemeIcon(s):
             return QIcon.fromTheme(s)
     return QIcon()
-icon._defaultSearch = ('spesmilo', 'bitcoin', 'icons/bitcoin32.xpm')
+icon._defaultSearch = ('spesmilo', 'bitcoin', 'icons/bitcoin32.png')
 
 def quietPopen(*args, **kwargs):
     if 'startupinfo' not in kwargs and hasattr(subprocess, 'STARTUPINFO'):
