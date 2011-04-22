@@ -18,7 +18,6 @@ import re
 from time import time
 from PySide.QtCore import *
 from PySide.QtGui import *
-from PySide.QtWebKit import *
 import send
 from settings import SpesmiloSettings, humanAmount, format_number, icon
 

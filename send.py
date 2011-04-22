@@ -18,7 +18,6 @@ from decimal import Decimal
 import re
 from PySide.QtCore import *
 from PySide.QtGui import *
-from PySide.QtWebKit import *
 from settings import humanAmount, humanToAmount, SpesmiloSettings
 
 _windows = {}
