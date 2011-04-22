@@ -228,6 +228,8 @@ class RootWindow(QMainWindow):
                         self.core.stop()
                     except core_interface.JSONRPCException:
                         pass
+                    except IOError:
+                        break
                     except socket.error:
                         break
                     except:
