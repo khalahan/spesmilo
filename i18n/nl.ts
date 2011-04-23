@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="1.1" language="nl_NL">
+<!DOCTYPE TS><TS version="1.1" language="nl">
 <context>
     <name>Cashier</name>
     <message>

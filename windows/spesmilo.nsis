@@ -102,7 +102,7 @@ SectionEnd
 SectionGroup /e "Languages"
 	Section /o "Dutch"
 		SetOutPath $INSTDIR\i18n
-		File "i18n\nl_NL.qm"
+		File "i18n\nl.qm"
 	SectionEnd
 	
 	Section "English"
@@ -113,12 +113,12 @@ SectionGroup /e "Languages"
 	
 	Section /o "Esperanto"
 		SetOutPath $INSTDIR\i18n
-		File "i18n\eo_EO.qm"
+		File "i18n\eo.qm"
 	SectionEnd
 	
 	Section /o "French"
 		SetOutPath $INSTDIR\i18n
-		File "i18n\fr_CA.qm"
+		File "i18n\fr.qm"
 	SectionEnd
 SectionGroupEnd
 
@@ -171,9 +171,9 @@ Section /o "Source Code"
 	File "spesmilo.nsis"
 	SetOutPath "$INSTDIR\Source\i18n"
 	File "i18n\en_GB.ts"
-	File "i18n\eo_EO.ts"
-	File "i18n\fr_CA.ts"
-	File "i18n\nl_NL.ts"
+	File "i18n\eo.ts"
+	File "i18n\fr.ts"
+	File "i18n\nl.ts"
 	SetOutPath "$INSTDIR\Source\icons"
 	File "icons\bitcoin32.xpm"
 	File "icons\document-new.svg"
@@ -234,10 +234,10 @@ Section "Uninstall"
 	Delete "$INSTDIR\w9xpopen.exe"
 	Delete "$INSTDIR\_multiprocessing.pyd"
 	Delete "$INSTDIR\libeay32.dll"
-	Delete "$INSTDIR\i18n\nl_NL.qm"
+	Delete "$INSTDIR\i18n\nl.qm"
 	Delete "$INSTDIR\i18n\en_GB.qm"
-	Delete "$INSTDIR\i18n\eo_EO.qm"
-	Delete "$INSTDIR\i18n\fr_CA.qm"
+	Delete "$INSTDIR\i18n\eo.qm"
+	Delete "$INSTDIR\i18n\fr.qm"
 	
 	Delete $INSTDIR\uninstall.exe
 	
