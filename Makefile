@@ -69,6 +69,9 @@ local:
 
 winprep: all icons/bitcoin32.ico icons/go-next.ico
 
+winexe:
+	makensis -NOCD windows/spesmilo.nsis
+
 clean:
 	rm -vf $(qm) $(pyo) $(APP) $(exescript) $(icon) $(fallback_icons)
 
