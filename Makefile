@@ -8,6 +8,7 @@ XDGDATADIR := $(DATADIR)
 XDGAPPDIR := $(XDGDATADIR)/applications
 KDESERVICEDIR := 
 DISABLE_FALLBACK_ICONS := 
+LINGUAS := $(patsubst i18n/%.ts,%,$(wildcard i18n/*.ts))
 
 DESTDIR := 
 
@@ -16,7 +17,7 @@ PYTHON := python
 PYTHON_O := $(PYTHON) -OO -m py_compile
 IMGCONVERT := convert -background none
 
-qm = $(patsubst %.ts,%.qm,$(wildcard i18n/*.ts))
+qm = $(patsubst %,i18n/%.qm,$(LINGUAS))
 pyo = $(patsubst %.py,%.pyo,$(wildcard *.py jsonrpc/*.py))
 exescript = $(APP).exescript
 icon = icons/bitcoin32.png
@@ -80,6 +81,9 @@ install: $(qm) $(pyo) exescript $(icon) $(fallback_icons)
 	$(INSTALL) "$(icon)" "$(DESTDIR)/$(ICONDIR)/32x32/apps/bitcoin.png"
 	for xicon in $(fallback_icons); do \
 		$(INSTALL) -D "$$xicon" "$(DESTDIR)/$(LIBEXECDIR)/$$xicon"; \
+	done
+	for xqm in $(qm); do \
+		$(INSTALL) -D "$$xqm" "$(DESTDIR)/$(LIBEXECDIR)/$$xqm"; \
 	done
 	$(INSTALL) -d "$(DESTDIR)/$(BINDIR)"
 	$(INSTALL) --mode=0755 "$(exescript)" "$(DESTDIR)/$(BINDIR)/$(APP)"
