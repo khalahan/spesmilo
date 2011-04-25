@@ -22,17 +22,18 @@ sudo apt-get install python-pyside
 
 # if your distro doesn't have this, use 'make local'
 
+# === Python Anynumber ===
+
+# if your distro doesn't have this, use 'make local'
+
+# == Compile ==
+
+make
+
 # == Run Spesmilo ==
 
-python main.py
+./spesmilo
 
-# Esperanto translation:
-#   uncomment the 5th line from the bottom of main.py
+# == Install ==
 
-# == Reconfigure Spesmilo ==
-
-python settings.py
-
-# == Open bitcoin URI ==
-
-python send.py bitcoin:...
+make install KDESERVICEDIR="/usr/share/kde4/services"

@@ -1,0 +1,3 @@
+layman -o https://gitorious.org/bitcoin/gentoo/blobs/raw/master/overlay.xml -f -a bitcoin
+# (you may need to keyword some packages)
+emerge -a spesmilo
