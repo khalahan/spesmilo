@@ -55,6 +55,28 @@ def quietPopen(*args, **kwargs):
                 return -1
         return dummy()
 
+def style_item(item, style, want_old = False):
+    old = None
+    brush = item.foreground()
+    font = item.font()
+    if want_old:
+        old = (brush.color(), font.style())
+    brush.setColor(style[0])
+    font.setStyle(style[1])
+    item.setForeground(brush)
+    item.setFont(font)
+    return old
+
+disabled_style = (Qt.gray, QFont.StyleItalic)
+def disable_item(item, *args, **kwargs):
+    return style_item(item, disabled_style, *args, **kwargs)
+
+def TonalSupported():
+    from PySide.QtGui import qApp
+    if not qApp:
+        return True
+    return QFontMetrics(qApp.font()).inFont(0xe9d9)
+
 class SettingsTabBASE(QWidget):
     def __init__(self, parent = None, dlg = None):
         super(SettingsTabBASE, self).__init__(parent)
@@ -184,6 +206,8 @@ class SettingsTabLanguage(SettingsTabBASE):
         mainlay = QFormLayout(self)
         
         self.lang = SettingsQComboBox(key='language/language', default='')
+        langM = QStandardItemModel()
+        self.lang.setModel(langM)
         langlist = [
             (self.tr('(Default)'), ''),
             (self.tr('American'), 'en_US'),
@@ -193,10 +217,13 @@ class SettingsTabLanguage(SettingsTabBASE):
             (self.tr('French'), 'fr'),
         ]
         langlist.sort()
-        for lang in langlist:
-            if not (lang[1] in ('', 'en_US') or os.path.exists("i18n/%s.qm" % (lang[1],))):
-                continue
+        for i in xrange(len(langlist)):
+            lang = langlist[i]
             self.lang.addItem(*lang)
+            if not (lang[1] in ('', 'en_US') or os.path.exists("i18n/%s.qm" % (lang[1],))):
+                item = langM.item(i, 0)
+                item.setSelectable(False)
+                disable_item(item)
         self.options.append(self.lang)
         mainlay.addRow(self.tr('Language:'), self.lang)
         
@@ -210,8 +237,14 @@ class SettingsTabLanguage(SettingsTabBASE):
         nslay.addWidget(self.strength)
         self.numsys = SettingsQComboBox(self, key='units/numsys', default='Decimal')
         self.numsys._apply = lambda nv: self._defer_update('counters', 'amounts')
+        numsysM = QStandardItemModel()
+        self.numsys.setModel(numsysM)
         self.numsys.addItem(self.tr('Decimal'), 'Decimal')
         self.numsys.addItem(self.tr('Tonal'), 'Tonal')
+        if not TonalSupported():
+            item = numsysM.item(1, 0)
+            item.setSelectable(False)
+            disable_item(item)
         self.options.append(self.numsys)
         nslay.addWidget(self.numsys)
         mainlay.addRow(self.tr('Number system:'), nslay)
@@ -331,6 +364,8 @@ class SpesmiloSettings:
         return _settings.value('core/uri', 'http://user:pass@localhost:8332')
 
     def getNumberSystem(self):
+        if not TonalSupported():
+            return 'Decimal'
         return _settings.value('units/numsys', 'Decimal')
 
     def getNumberSystemStrength(self):
@@ -384,7 +419,7 @@ class SpesmiloSettings:
         ns = self.getNumberSystem()
         nss = self.getNumberSystemStrength()
         ens = None
-        if nss != 'Force' and n:
+        if nss != 'Force' and n and TonalSupported():
             # If it's only valid as one, and not the other, choose it
             ivD = 0 == n % 1000000
             ivT = 0 == n % 0x100

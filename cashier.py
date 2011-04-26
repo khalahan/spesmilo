@@ -19,7 +19,7 @@ from time import time
 from PySide.QtCore import *
 from PySide.QtGui import *
 import send
-from settings import SpesmiloSettings, humanAmount, format_number, icon
+from settings import SpesmiloSettings, humanAmount, format_number, icon, style_item, disable_item
 
 class FocusLineEdit(QLineEdit):
     def __init__(self, text):
@@ -212,22 +212,13 @@ class TransactionsTable(QTableWidget):
         if not hasattr(self, '_eti'):
             # Must already be enabled :p
             return
-        brush = item.foreground()
-        brush.setColor(self._eti[0])
-        item.setForeground(brush)
-        font = item.font()
-        font.setStyle(self._eti[1])
-        item.setFont(font)
+        style_item(item, self._eti)
 
     def disable_table_item(self, item):
-        brush = item.foreground()
-        font = item.font()
-        if not hasattr(self, '_eti'):
-            self._eti = (brush.color(), font.style())
-        brush.setColor(Qt.gray)
-        font.setStyle(font.StyleItalic)
-        item.setForeground(brush)
-        item.setFont(font)
+        want_old = not hasattr(self, '_eti')
+        rv = disable_item(item, want_old=want_old)
+        if want_old:
+            self._eti = rv
 
 class Cashier(QDialog):
     def __init__(self, core, clipboard, parent=None):
