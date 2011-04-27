@@ -106,21 +106,26 @@ class TransactionsTable(QTableWidget):
 
         row_disabled = False
         stage = self.confirmation_stage(category, confirms)
-        if stage == 0x100:
-            status = self.tr('Confirmed (%s)')
-        elif stage:
-            status = self.tr('Processing... (%s)')
+        sf = None
+        if stage:
+            if stage == 0x100:
+                status = self.tr('Confirmed (%s)')
+            else:
+                status = self.tr('Processing... (%s)')
+            if self.confirmation_stage(category, status_item.confirmations) < stage:
+                sf = self.enable_table_item
         else:
             status = self.tr('Validating... (%s)')
-            row_disabled = True
+            if not hastxt:
+                sf = self.disable_table_item
         status %= (format_number(confirms),)
 
         status_item.setText(status)
         status_item.confirmations = confirms
 
-        sf = self.disable_table_item if row_disabled else self.enable_table_item
-        for j in range(0, 5):
-            sf(self.item(i, j))
+        if sf:
+            for j in range(0, 5):
+                sf(self.item(i, j))
 
     def update_transaction_time(self, row, unixtime):
         date_formatter = QDateTime()
