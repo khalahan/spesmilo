@@ -226,10 +226,11 @@ class TransactionsTable(QTableWidget):
             self._eti = rv
 
 class Cashier(QDialog):
-    def __init__(self, core, clipboard, parent=None):
+    def __init__(self, core, clipboard, parent=None, tray=None):
         super(Cashier, self).__init__(parent)
         self.core = core
         self.clipboard = clipboard
+        self.tray = tray
 
         self.create_actions()
         main_layout = QVBoxLayout(self)
@@ -487,6 +488,8 @@ class Cashier(QDialog):
     def refresh_balance_label(self):
         bltext = self.tr('Balance: %s') % (humanAmount(self.balance, wantTLA=True),)
         self.balance_label.setText(bltext)
+        if hasattr(self, 'tray') and self.tray:
+            self.tray.setToolTip(bltext)
 
     def create_actions(self):
         self.send_act = QAction(icon('go-next'), self.tr('Send'),

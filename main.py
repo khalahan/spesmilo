@@ -127,7 +127,8 @@ class TrayIcon(QSystemTrayIcon):
         self.send_act.setDisabled(False)
         self.delete_window()
         self.current_window = cashier.Cashier(self.core, qApp.clipboard(),
-                                              self.parent())
+                                              self.parent(),
+                                              tray=self)
         self.show_cashier()
 
     def show_cashier(self):
