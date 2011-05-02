@@ -18,7 +18,7 @@ PYTHON_O := $(PYTHON) -OO -m py_compile
 IMGCONVERT := convert -background none
 
 qm = $(patsubst %,i18n/%.qm,$(LINGUAS))
-pyo = $(patsubst %.py,%.pyo,$(wildcard *.py jsonrpc/*.py))
+pyo = $(patsubst %.py,%.pyo,$(wildcard *.py lib/*/*.py))
 exescript = $(APP).exescript
 icon = icons/bitcoin32.png
 ifeq ($(DISABLE_FALLBACK_ICONS),)
