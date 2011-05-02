@@ -62,7 +62,16 @@ exescript:
 
 local:
 	mkdir -p lib
-	svn co http://svn.json-rpc.org/trunk/python-jsonrpc/jsonrpc lib/jsonrpc
+	$(call GIT_POC, \
+		git://github.com/jgarzik/python-bitcoinrpc.git, lib/bitcoinrpc, \
+		true)
+	@if [ -e "lib/jsonrpc" ]; then \
+		if ! [ -L "lib/jsonrpc" ]; then \
+			echo '*** You may wish to delete lib/jsonrpc and re-run "make local".'; \
+		fi \
+	else \
+		ln -s bitcoinrpc/jsonrpc lib/jsonrpc; \
+	fi
 	$(call GIT_POC, \
 		git://gitorious.org/anynumber/python.git, lib/anynumber, \
 		ln -s anynumber.py lib/anynumber/__init__.py)
