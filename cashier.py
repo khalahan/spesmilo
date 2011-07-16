@@ -164,7 +164,11 @@ class TransactionsTable(QTableWidget):
         if category == 'send':
             description = self.tr('Sent to %s')%address
         elif category == 'receive':
-            description = self.tr('Received to %s')%address
+            fullto = address
+            acct = transaction.get('account', None)
+            if acct:
+				fullto = "%s: %s" % (acct, address)
+            description = self.tr('Received to %s') % (fullto,)
         elif category in ('generate', 'immature'):
             description = self.tr('Generated')
             status_item.category = category
