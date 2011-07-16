@@ -452,7 +452,7 @@ class SpesmiloSettings:
         try:
             ens = self.ChooseUnits(n)
         except ValueError:
-            return n
+            return str(n)
         if ens != ns:
             wantTLA = True
         if ens == 'Tonal':
