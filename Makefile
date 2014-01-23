@@ -72,6 +72,13 @@ local:
 	else \
 		ln -s bitcoinrpc/jsonrpc lib/jsonrpc; \
 	fi
+	@if [ -e "lib/jsonrpc/bitcoinrpc" ]; then \
+		if ! [ -L "lib/jsonrpc/bitcoinrpc" ]; then \
+			echo '*** You may wish to delete lib/jsonrpc/bitcoinrpc and re-run "make local".'; \
+		fi \
+	else \
+		ln -s ../bitcoinrpc lib/jsonrpc/bitcoinrpc; \
+	fi
 	$(call GIT_POC, \
 		git://gitorious.org/anynumber/python.git, lib/anynumber, \
 		ln -s anynumber.py lib/anynumber/__init__.py)
